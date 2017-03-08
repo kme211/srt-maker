@@ -1,14 +1,46 @@
 .container {
-  position: absolute;
-  top: 30%;
-  left: 10px;
-  text-align: center;
+  text-align: left;
+  height: 100vh;
 }
 
-.container h2 {
-  font-size: 5rem;
-}
 
 .container a {
   font-size: 1.4rem;
+}
+
+.main {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.header {
+  flex: 0 1 100%;
+  padding: 1rem;
+  align-self: flex-start;
+}
+
+.header h2 {
+  font-size: 2rem;
+}
+
+
+.bottomBar {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 100%;
+  padding: 0.5rem;
+  background: #2A2929;
+  align-self: flex-end;
+}
+
+.editor {
+  padding: 1rem;
+  flex: 3 auto;
+}
+
+.leftBar {
+  flex: 1 auto;
+  padding: 1rem;
 }

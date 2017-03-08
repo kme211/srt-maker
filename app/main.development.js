@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, shell } from 'electron';
+import { app, BrowserWindow, Menu, shell,  dialog, ipcMain } from 'electron';
 
 let menu;
 let template;
@@ -42,6 +42,7 @@ const installExtensions = async () => {
 };
 
 app.on('ready', async () => {
+  console.log('app is ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   await installExtensions();
 
   mainWindow = new BrowserWindow({
@@ -59,6 +60,18 @@ app.on('ready', async () => {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  ipcMain.on('add-mp3', (event) => {
+    console.log('ipcMain - add mp3')
+    dialog.showOpenDialog({
+      title: 'Add MP3',
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: 'Audio', extensions: ['mp3', 'wav']}]
+    }, (fileNames) => {
+      console.log('fileNames', fileNames)
+      event.sender.send('mp3-selected', fileNames);
+    });
   });
 
   if (process.env.NODE_ENV === 'development') {

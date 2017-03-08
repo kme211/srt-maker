@@ -1,0 +1,15 @@
+.list {
+    color: #95989A;
+    margin: 0;
+    padding: 0;
+}
+
+.listItem {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.listItem:hover {
+    background: rgba(0, 0, 0, 0.75);
+}
