@@ -4,23 +4,46 @@ import { Link } from 'react-router';
 import styles from './Home.css';
 import { ipcRenderer } from 'electron';
 import AudioList from './AudioList';
+import Editor from './Editor';
+import GettingStarted from './GettingStarted';
+import cuid from 'cuid';
+import Modal from 'react-modal';
 
 class Home extends Component {
   props: {
     addFiles: () => void,
+    updateFile: () => void,
     files: array
   };
 
   constructor(props) {
     super(props);
 
+    this.state = {
+      currentFileId: '',
+      keyboardShortcutsModalOpen: false
+    };
+
     this.openDialog = this.openDialog.bind(this);
+    this.updateCurrentFileId = this.updateCurrentFileId.bind(this);
+    this.setTranscriptText = this.setTranscriptText.bind(this);
+    this.updateTiming = this.updateTiming.bind(this);
+    this.toggleKeyboardShortcutsModal = this.toggleKeyboardShortcutsModal.bind(this);
   }
 
   componentDidMount() {
     ipcRenderer.on('mp3-selected', (event, fileNames) => {
       console.log('mp3-selected', event, fileNames)
-      if(fileNames) this.props.addFiles(fileNames)
+      if(fileNames) {
+        const files = fileNames.map((filePath) => {
+          return {
+            filePath,
+            id: cuid(),
+            timing: []
+          }
+        });
+        this.props.addFiles(files)
+      }
     });
   }
 
@@ -29,7 +52,45 @@ class Home extends Component {
     ipcRenderer.send('add-mp3');
   }
 
+  updateCurrentFileId(id) {
+    this.setState({
+      currentFileId: id
+    });
+  }
+
+  setTranscriptText({ id, text }) {
+    const timing = text.match(/[^\.!\?]+[\.!\?]+/g).map((textBlock) => {
+        return {
+          id: cuid(),
+          text: textBlock,
+          startTime: 'not set',
+          endTime: 'not set'
+        };
+      });
+    this.props.updateFile({ id, timing });
+  }
+
+  updateTiming({ id, updatedBlock }) {
+    const file = this.props.files.find(file => file.id === id);
+    const index = file.timing.findIndex(block => block.id === updatedBlock.id);
+    const timing = [
+      ...file.timing.slice(0, index),
+      updatedBlock,
+      ...file.timing.slice(index + 1)
+    ];
+    this.props.updateFile({ id, timing });
+  }
+
+  toggleKeyboardShortcutsModal() {
+    this.setState((prevState) => {
+      return { keyboardShortcutsModalOpen: !prevState.keyboardShortcutsModalOpen };
+    });
+  }
+
   render() {
+    const { files } = this.props;
+    const { currentFileId, keyboardShortcutsModalOpen } = this.state;
+    const currentFile = files.find(file => file.id === currentFileId);
     return (
       <div>
         <div className={styles.container} data-tid="container">
@@ -39,23 +100,47 @@ class Home extends Component {
             <header className={styles.header}>
               <h2>srt maker</h2>
             </header>
-            <div className={styles.leftBar}>
-              <h3>Audio</h3>
-              {this.props.files.length && <AudioList files={this.props.files} />}
-            </div>
 
-            <div className={styles.editor}>
-              Nothing selected
+            <div className={styles.middle}>
+              <div className={styles.leftBar}>
+                <h3>Audio</h3>
+                {this.props.files.length ? <AudioList files={files} currentFileId={currentFileId} onClick={this.updateCurrentFileId} /> : <div className={styles.leftBarEmpty}>Nothing yet.</div>}
+              </div>
+
+              {currentFileId.length ? <Editor file={currentFile} setTranscriptText={this.setTranscriptText} updateTiming={this.updateTiming}/> : <GettingStarted/>}
             </div>
 
             <div className={styles.bottomBar}>
-                <button className="btn btn-default" onClick={this.openDialog}>Add audio</button>
+                <button className="btn btn-default" onClick={this.openDialog}><i className="fa fa-plus" aria-hidden="true"></i> Add audio</button>
+                <button className="btn btn-default" onClick={this.toggleKeyboardShortcutsModal}><i className="fa fa-keyboard-o" aria-hidden="true"></i> Keyboard shortcuts</button>
             </div>
           </div>
 
           
           
         </div>
+
+        <Modal
+          isOpen={keyboardShortcutsModalOpen}
+          style={{
+              overlay: {
+                  zIndex: 3,
+                  background: 'rgba(0,0,0,0.5)'
+              },
+              content: {
+                  background: 'rgba(0,0,0,0.8)'
+              }
+          }}
+          contentLabel="KeyboardShortcuts">
+          <div className={styles.keyboardShortcuts}>
+            <h1>Keyboard shortcuts</h1>
+            <p><code>a</code> set start time</p>
+            <p><code>d</code> set end time</p>
+            <p><code>spacebar</code> toggle play/pause</p>
+            <button onClick={this.toggleKeyboardShortcutsModal}>Close</button>
+          </div>
+        </Modal>
+
         
       </div>
     );

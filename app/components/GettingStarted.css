@@ -1,0 +1,13 @@
+.gettingStarted {
+    margin: 1rem;
+    max-width: 600px;
+}
+
+.gettingStarted h1 {
+    font-size: 1.5rem;
+}
+
+.gettingStarted p {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}

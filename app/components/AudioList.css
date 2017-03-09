@@ -4,10 +4,16 @@
     padding: 0;
 }
 
-.listItem {
-    padding: 0.5rem;
+.listItem,
+.listItemSelected {
+    padding: 0.5rem 1rem;
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.listItemSelected {
+    color: white;
+    background: #D62B70;
 }
 
 .listItem:hover {

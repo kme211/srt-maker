@@ -1,22 +1,25 @@
 // @flow
-import { ADD_FILES } from '../actions/files';
+import { ADD_FILES, UPDATE_FILE } from '../actions/files';
 
-export type fileType = {filePath: string, timing: []};
+export type fileType = {filePath: string, timing: {text: string, startTime: string, endTime: string}[], id: string};
 
 type actionType = {
   type: string
 };
 
 export default function files(state: fileType[] = [], action: actionType) {
-  console.log('files reducer', action)
   switch (action.type) {
     case ADD_FILES:
-      return state.concat(action.files.map((filePath) => {
-          return {
-              filePath,
-              timing: []
-          }
-      }));
+      return state.concat(action.files);
+    case UPDATE_FILE: 
+      const index = state.findIndex(file => file.id === action.updates.id);
+      const file = state[index];
+      
+      return [
+          ...state.slice(0, index),
+          Object.assign({}, file, action.updates),
+          ...state.slice(index + 1)
+        ]
     default:
       return state;
   }

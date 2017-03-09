@@ -1,0 +1,24 @@
+.textBlock,
+.textBlockSelected,
+.textBlockComplete {
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 4px 0;
+    line-height: 2rem;
+    color: #95989A;
+}
+
+.textBlockSelected {
+    background: rgba(214, 43, 112, 0.5);
+    color: white;
+}
+
+.textBlockComplete {
+    background: #9BCB3C;
+    color: black;
+}
+
+
+.textBlock:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
