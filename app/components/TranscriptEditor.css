@@ -1,0 +1,46 @@
+.transcriptEditor {
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.row {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-content: center;
+    font-size: 1rem;
+}
+
+.row {
+    margin: 0 0 0.5rem 0;
+}
+
+.row button:first-of-type {
+    margin: 0 0.5rem 0 0;
+}
+
+.row:first-child {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.textBlock {
+   width: calc(100% - 3rem);
+   background: none;
+   color: white;
+   font-family: inherit;
+   padding: 1rem;
+   margin: 0 0.5rem 0 0;
+}
+
+.removeButton {
+    color: #F92727;
+    border: 1px solid #F92727;
+}
+
+.removeButton i,
+.addButton i {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 2px;
+}

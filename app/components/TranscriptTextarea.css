@@ -1,0 +1,9 @@
+.transcriptTextarea {
+    width: 100%;
+    font-family: inherit;
+    background: none;
+    color: white;
+    padding: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}

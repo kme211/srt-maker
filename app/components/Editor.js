@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import styles from './Editor.css';
-import Modal from 'react-modal';
+import TranscriptModal from './TranscriptModal';
 import Transcript from './Transcript';
 import Waveform from './Waveform';
 
@@ -20,6 +20,7 @@ class Editor extends Component {
             pos: 0,
             transcriptModalIsOpen: false,
             tempTranscriptText: '',
+            tempTiming: [],
             currentTimingIndex: -1
         };
 
@@ -29,10 +30,12 @@ class Editor extends Component {
         this.setCurrentTimingIndex = this.setCurrentTimingIndex.bind(this);
         this.handleTimingChange = this.handleTimingChange.bind(this);
         this.updateTempTranscriptText = this.updateTempTranscriptText.bind(this);
+        this.updateTempTiming = this.updateTempTiming.bind(this);
         this.saveTranscript = this.saveTranscript.bind(this);
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.resetTranscript = this.resetTranscript.bind(this);
     }
 
     componentDidMount() {
@@ -50,6 +53,7 @@ class Editor extends Component {
     }
 
     handleKeyDown(e) {
+        if(this.state.transcriptModalIsOpen) return;
         const block = this.props.file.timing[this.state.currentTimingIndex];
 
         const key = e.key;
@@ -85,10 +89,13 @@ class Editor extends Component {
         this.setState({ tempTranscriptText: e.target.value });
     }
 
+    updateTempTiming(newTiming) {
+        this.setState({ tempTiming: newTiming });
+    }
+
     handleTimingChange(prop) {
         const { file } = this.props;
         const { currentTimingIndex, pos } = this.state;
-        console.log('pos', pos)
         const currentBlock = file.timing[currentTimingIndex];
         this.props.updateTiming({ 
             id: file.id, 
@@ -96,11 +103,14 @@ class Editor extends Component {
         });
     }
 
+    resetTranscript() {
+        this.setState({ tempTranscriptText: '' });
+    }
+
     saveTranscript() {
-        console.log('saveTranscript');
         this.props.setTranscriptText({ 
             id: this.props.file.id, 
-            text: this.state.tempTranscriptText
+            tempTiming: this.state.tempTiming
         });
         this.setState({ currentTimingIndex: 0 });
         this.closeModal();
@@ -113,7 +123,7 @@ class Editor extends Component {
     render() {
         const { file } = this.props;
         const timing = file.timing;
-        const { playing, pos, tempTranscriptText, currentTimingIndex } = this.state;
+        const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming } = this.state;
         const block = timing[currentTimingIndex];
         const { startTime, endTime } = block || { startTime: 'not set', endTime: 'not set' };
         return (
@@ -141,26 +151,16 @@ class Editor extends Component {
                     
                 </div>
 
-                <Modal
+                <TranscriptModal 
                     isOpen={this.state.transcriptModalIsOpen}
-                    onRequestClose={this.closeModal}
-                    style={{
-                        overlay: {
-                            zIndex: 3,
-                            background: 'rgba(0,0,0,0.5)'
-                        },
-                        content: {
-                            background: 'rgba(0,0,0,0.8)'
-                        }
-                    }}
-                    contentLabel="Transcript">
-
-                    <h1 className={styles.modalHeader}>Transcript for {file.filePath.split('\\').pop()}</h1>
-                    <textarea className={styles.modalTextarea} rows={5} value={tempTranscriptText} onChange={this.updateTempTranscriptText} placeholder="Audio transcript..."/>
-                    <button onClick={this.saveTranscript}>Save</button>
-                    <button onClick={this.closeModal}>Cancel</button>
-
-                </Modal>
+                    text={tempTranscriptText}
+                    closeModal={this.closeModal}
+                    fileName={file.filePath.split('\\').pop()}
+                    updateTempTranscriptText={this.updateTempTranscriptText}
+                    tempTiming={tempTiming}
+                    updateTempTiming={this.updateTempTiming}
+                    resetTranscript={this.resetTranscript}
+                    saveTranscript={this.saveTranscript} />
             </div>
         );
     }

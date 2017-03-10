@@ -11,6 +11,11 @@
     transition: all 0.3s;
 }
 
+.listItem i,
+.listItemSelected i {
+    margin: 0 0 0 0.5rem;
+}
+
 .listItemSelected {
     color: white;
     background: #D62B70;

@@ -64,17 +64,3 @@
     margin: 0 auto;
     display: block;
 }
-
-.modalHeader {
-    font-size: 1.5rem;
-}
-
-.modalTextarea {
-    width: 100%;
-    font-family: inherit;
-    background: none;
-    color: white;
-    padding: 1rem;
-    box-sizing: border-box;
-    margin-bottom: 1rem;
-}

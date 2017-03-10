@@ -1,0 +1,12 @@
+.header {
+    font-size: 1.5rem;
+    align-self: flex-start;
+}
+
+.buttonPanel {
+    align-self: flex-end;
+}
+
+.buttonPanel > button:not(:last-child) {
+    margin-right: 0.5rem;
+}

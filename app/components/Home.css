@@ -27,9 +27,15 @@
 .bottomBar {
   box-sizing: border-box;
   display: flex;
+  flex-flow: row wrap;
   padding: 0.5rem;
   background: rgba(0, 0, 0, 0.5);
   justify-content: space-between;
+  align-items: center;
+}
+
+.bottomBar > * {
+  flex: 0 1 auto;
 }
 
 .middle {

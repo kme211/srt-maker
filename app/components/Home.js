@@ -58,14 +58,9 @@ class Home extends Component {
     });
   }
 
-  setTranscriptText({ id, text }) {
-    const timing = text.match(/[^\.!\?]+[\.!\?]+/g).map((textBlock) => {
-        return {
-          id: cuid(),
-          text: textBlock,
-          startTime: 'not set',
-          endTime: 'not set'
-        };
+  setTranscriptText({ id, tempTiming }) {
+    const timing = tempTiming.map((block) => {
+        return Object.assign({}, block, { startTime: 'not set', endTime: 'not set' });
       });
     this.props.updateFile({ id, timing });
   }
