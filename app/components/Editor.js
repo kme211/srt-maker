@@ -9,7 +9,8 @@ class Editor extends Component {
     props: {
        file: {filePath: string, timing: [], id: string},
        setTranscriptText: Function,
-       updateTiming: Function
+       updateTiming: Function,
+       exportToSrt: Function
     };
 
     constructor(props) {
@@ -36,6 +37,7 @@ class Editor extends Component {
         this.closeModal = this.closeModal.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.resetTranscript = this.resetTranscript.bind(this);
+        this.exportCurrentFile = this.exportCurrentFile.bind(this);
     }
 
     componentDidMount() {
@@ -43,7 +45,7 @@ class Editor extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.fileId !== this.props.fileId) {
+        if(nextProps.file.id !== this.props.file.id) {
             this.setState({
                 playing: false,
                 pos: 0,
@@ -69,7 +71,11 @@ class Editor extends Component {
     }
 
     openModal() {
-        this.setState({ transcriptModalIsOpen: true });
+        this.setState({ 
+            transcriptModalIsOpen: true,
+            tempTranscriptText: '',
+            tempTiming: []
+         });
     }
 
     closeModal() {
@@ -120,12 +126,19 @@ class Editor extends Component {
         this.setState({ currentTimingIndex: index });
     }
 
+    exportCurrentFile() {
+        const { file, exportToSrt } = this.props;
+        exportToSrt([file.id]);
+    }
+
     render() {
         const { file } = this.props;
         const timing = file.timing;
         const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming } = this.state;
         const block = timing[currentTimingIndex];
+        const fileName = file.filePath.split('\\').pop();
         const { startTime, endTime } = block || { startTime: 'not set', endTime: 'not set' };
+        const complete = timing.every(block => block.startTime !== 'not set' && block.endTime !== 'not set');
         return (
             <div className={styles.editor}>
                 <div className={styles.waveform}>
@@ -155,12 +168,14 @@ class Editor extends Component {
                     isOpen={this.state.transcriptModalIsOpen}
                     text={tempTranscriptText}
                     closeModal={this.closeModal}
-                    fileName={file.filePath.split('\\').pop()}
+                    fileName={fileName}
                     updateTempTranscriptText={this.updateTempTranscriptText}
                     tempTiming={tempTiming}
                     updateTempTiming={this.updateTempTiming}
                     resetTranscript={this.resetTranscript}
                     saveTranscript={this.saveTranscript} />
+
+                {complete && <button onClick={this.exportCurrentFile}>Export</button>}
             </div>
         );
     }

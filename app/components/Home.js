@@ -24,6 +24,7 @@ class Home extends Component {
       keyboardShortcutsModalOpen: false
     };
 
+    this.exportToSrt = this.exportToSrt.bind(this);
     this.openDialog = this.openDialog.bind(this);
     this.updateCurrentFileId = this.updateCurrentFileId.bind(this);
     this.setTranscriptText = this.setTranscriptText.bind(this);
@@ -33,7 +34,6 @@ class Home extends Component {
 
   componentDidMount() {
     ipcRenderer.on('mp3-selected', (event, fileNames) => {
-      console.log('mp3-selected', event, fileNames)
       if(fileNames) {
         const files = fileNames.map((filePath) => {
           return {
@@ -47,8 +47,23 @@ class Home extends Component {
     });
   }
 
+  exportToSrt(ids) {
+    console.log('exportToSrt', ids)
+    const data = [];
+    for(let id of ids) {
+      const file = this.props.files.find(file => file.id === id);
+      const { timing, filePath } = file;
+      data.push({
+        id,
+        timing,
+        fileName: filePath.split('\\').pop().slice(0, -4) + '.srt'
+      });
+    }
+      
+      ipcRenderer.send('export-to-srt', data);
+    }
+
   openDialog() {
-    console.log('openDialog');
     ipcRenderer.send('add-mp3');
   }
 
@@ -102,7 +117,7 @@ class Home extends Component {
                 {this.props.files.length ? <AudioList files={files} currentFileId={currentFileId} onClick={this.updateCurrentFileId} /> : <div className={styles.leftBarEmpty}>Nothing yet.</div>}
               </div>
 
-              {currentFileId.length ? <Editor file={currentFile} setTranscriptText={this.setTranscriptText} updateTiming={this.updateTiming}/> : <GettingStarted/>}
+              {currentFileId.length ? <Editor file={currentFile} setTranscriptText={this.setTranscriptText} updateTiming={this.updateTiming} exportToSrt={this.exportToSrt}/> : <GettingStarted/>}
             </div>
 
             <div className={styles.bottomBar}>

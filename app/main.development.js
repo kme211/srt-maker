@@ -1,4 +1,5 @@
 import { app, BrowserWindow, Menu, shell,  dialog, ipcMain } from 'electron';
+import fs from 'fs';
 
 let menu;
 let template;
@@ -42,7 +43,6 @@ const installExtensions = async () => {
 };
 
 app.on('ready', async () => {
-  console.log('app is ready!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   await installExtensions();
 
   mainWindow = new BrowserWindow({
@@ -63,14 +63,42 @@ app.on('ready', async () => {
   });
 
   ipcMain.on('add-mp3', (event) => {
-    console.log('ipcMain - add mp3')
     dialog.showOpenDialog({
       title: 'Add MP3',
       properties: ['openFile', 'multiSelections'],
       filters: [{ name: 'Audio', extensions: ['mp3', 'wav']}]
     }, (fileNames) => {
-      console.log('fileNames', fileNames)
       event.sender.send('mp3-selected', fileNames);
+    });
+  });
+
+  ipcMain.on('export-to-srt', (event, data) => {
+    console.log('data', data)
+    dialog.showSaveDialog({
+      title: "Save file",
+      defaultPath: data.length > 1 ? null : data[0].fileName
+    }, (fileName) => {
+      console.log('save dialog closed', fileName);
+      if(!fileName) return;
+      data.forEach(function(file) {
+        const fileData = file.timing.map((block, index) => {
+        const startTime = block.startTime.split('.');
+        const [ startMins, startSeconds ] = startTime;
+        const endTime = block.endTime.split('.');
+        const [ endMins, endSeconds ] = endTime;
+          return `
+${index + 1}\r\n
+00:${},000 --> ${block.endTime}\r\n
+00:${block.text},000\r\n
+`;
+        })
+        fs.writeFile(fileName, fileData.join('\r\n'), 'utf-8', function(err) {
+          if(err) return console.log(err);
+          console.log('file written to ' + fileName);
+          event.sender.send('file-written', fileName);
+        });
+      });
+      
     });
   });
 
