@@ -96,11 +96,11 @@ class Editor extends Component {
         this.setState({ tempTranscriptText: e.target.value });
     }
 
-    updateTempTiming(newTiming) {
+    updateTempTiming(newTiming: {id: string, text: string}[]) {
         this.setState({ tempTiming: newTiming });
     }
 
-    handleTimingChange(prop) {
+    handleTimingChange(prop: string) {
         const validationErrors = [];
         const { file } = this.props;
         const { currentTimingIndex, pos } = this.state;
@@ -124,7 +124,7 @@ class Editor extends Component {
         this.closeModal();
     }
 
-    setCurrentTimingIndex(index) {
+    setCurrentTimingIndex(index: number) {
         this.setState({ currentTimingIndex: index });
     }
 
@@ -138,7 +138,8 @@ class Editor extends Component {
         const timing = file.timing;
         const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming } = this.state;
         const block = timing[currentTimingIndex];
-        const fileName = file.filePath.split('\\').pop();
+        const sep = file.filePath.match('\\\\') ? '\\' : '/';
+        const fileName = file.filePath.split(sep).pop();
         const { startTime, endTime } = block || { startTime: 'not set', endTime: 'not set' };
         const complete = timing.length ? timing.every(block => block.startTime !== 'not set' && block.endTime !== 'not set') : false;
         return (

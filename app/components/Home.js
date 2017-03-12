@@ -47,8 +47,7 @@ class Home extends Component {
     });
   }
 
-  exportToSrt(ids) {
-    console.log('exportToSrt', ids)
+  exportToSrt(ids: string[]) {
     const data = [];
     for(let id of ids) {
       const file = this.props.files.find(file => file.id === id);
@@ -74,6 +73,7 @@ class Home extends Component {
   }
 
   setTranscriptText({ id, tempTiming }) {
+    // id: string, tempTiming: {id: string, text: string}[]
     const timing = tempTiming.map((block) => {
         return Object.assign({}, block, { startTime: 'not set', endTime: 'not set' });
       });
@@ -81,6 +81,7 @@ class Home extends Component {
   }
 
   updateTiming({ id, updatedBlock }) {
+    // id: string, updatedBlock: {id: string, text: string, startTime: string, endTime: string}
     const file = this.props.files.find(file => file.id === id);
     const index = file.timing.findIndex(block => block.id === updatedBlock.id);
     const timing = [

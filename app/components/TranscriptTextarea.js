@@ -16,7 +16,7 @@ class TranscriptTextarea extends Component {
                 rows={5} 
                 value={value} 
                 onChange={onChange} 
-                placeholder="Audio transcript..."
+                placeholder="Paste audio transcript..."
             />
         );
     }
