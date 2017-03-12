@@ -5,11 +5,11 @@ import { routerMiddleware, push } from 'react-router-redux';
 import createLogger from 'redux-logger';
 import rootReducer from '../reducers';
 
-import * as counterActions from '../actions/counter';
-import type { counterStateType } from '../reducers/counter';
+import * as fileActions from '../actions/files';
+import type { fileType } from '../reducers/files';
 
 const actionCreators = {
-  ...counterActions,
+  ...fileActions,
   push,
 };
 
@@ -33,7 +33,7 @@ const enhancer = composeEnhancers(
   applyMiddleware(thunk, router, logger)
 );
 
-export default function configureStore(initialState?: counterStateType) {
+export default function configureStore(initialState?: fileType[]) {
   const store = createStore(rootReducer, initialState, enhancer);
 
   if (module.hot) {
