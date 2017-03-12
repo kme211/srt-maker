@@ -23,7 +23,8 @@ class Editor extends Component {
             transcriptModalIsOpen: false,
             tempTranscriptText: '',
             tempTiming: [],
-            currentTimingIndex: -1
+            currentTimingIndex: -1,
+            validationErrors: []
         };
 
         this.handleTogglePlay = this.handleTogglePlay.bind(this);
@@ -105,10 +106,33 @@ class Editor extends Component {
         const { file } = this.props;
         const { currentTimingIndex, pos } = this.state;
         const currentBlock = file.timing[currentTimingIndex];
-        this.props.updateTiming({ 
-            id: file.id, 
-            updatedBlock: Object.assign({}, currentBlock, { [prop]: getTimeString(pos) })
-        });
+        const currentPos = +pos;
+        const currentEndTime = +currentBlock.endTimeSeconds;
+        const currentStartTime = +currentBlock.startTimeSeconds;
+        if(prop === 'startTime' && currentEndTime >= 0) {
+            if(currentPos === currentEndTime) {
+                validationErrors.push('Start time and end time cannot be equal.');
+            }
+            if(currentPos > currentEndTime) {
+                validationErrors.push('Start time cannot be greater than the end time.');
+            }
+        } else if(prop ===  'endTime' && currentStartTime >= 0) {
+            if(currentPos === currentStartTime) {
+                validationErrors.push('Start time and end time cannot be equal.');
+            }
+            if(currentPos < currentStartTime) {
+                validationErrors.push('End time cannot be less than start time.');
+            }
+        }
+
+        this.setState({ validationErrors });
+
+        if(validationErrors.length === 0) {
+            this.props.updateTiming({ 
+                id: file.id, 
+                updatedBlock: Object.assign({}, currentBlock, { [prop]: getTimeString(pos), [prop + 'Seconds']: pos })
+            });
+        }
     }
 
     resetTranscript() {
@@ -136,7 +160,7 @@ class Editor extends Component {
     render() {
         const { file } = this.props;
         const timing = file.timing;
-        const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming } = this.state;
+        const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming, validationErrors } = this.state;
         const block = timing[currentTimingIndex];
         const sep = file.filePath.match('\\\\') ? '\\' : '/';
         const fileName = file.filePath.split(sep).pop();
@@ -157,6 +181,11 @@ class Editor extends Component {
                     <div className={styles.timeBlock}>Current time: <div className={styles.timeValue}>{getTimeString(pos)}</div></div>
                     {currentTimingIndex >= 0 && <div className={styles.timeBlock}>End time: <div className={styles.timeValue}>{endTime}</div></div>}
                 </div>
+
+                <div className={styles.validationErrors}>
+                    {validationErrors.map((err, index) => <div key={index}>{err}</div>)}
+                </div>
+
                 <div className={styles.buttonPanel}>
                     {currentTimingIndex >= 0 && <button className={styles.setTimeBtn} onClick={this.handleTimingChange.bind(this, 'startTime')}>Set start</button>}
                     <button onClick={this.handleTogglePlay}>{playing ? <i className="fa fa-pause" aria-hidden="true"></i> : <i className="fa fa-play" aria-hidden="true"></i>}</button>

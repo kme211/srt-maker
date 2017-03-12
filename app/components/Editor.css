@@ -17,6 +17,12 @@
     justify-content: space-around;
 }
 
+
+.buttonPanel > * {
+    flex: 0 1 100px;
+    height: 100px;
+}
+
 .buttonPanelBottom {
     display: flex;
     justify-content: space-between;
@@ -58,10 +64,13 @@
     text-align: center;
 }
 
-.buttonPanel > * {
-    flex: 0 1 100px;
-    height: 100px;
+.validationErrors {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #F92727;
+    width: 100%;
 }
+
 
 .transcript {
     flex: 1 1 100%;
