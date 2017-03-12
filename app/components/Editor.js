@@ -4,6 +4,7 @@ import styles from './Editor.css';
 import TranscriptModal from './TranscriptModal';
 import Transcript from './Transcript';
 import Waveform from './Waveform';
+import getTimeString from '../utils/getTimeString';
 
 class Editor extends Component {
     props: {
@@ -105,7 +106,7 @@ class Editor extends Component {
         const currentBlock = file.timing[currentTimingIndex];
         this.props.updateTiming({ 
             id: file.id, 
-            updatedBlock: Object.assign({}, currentBlock, { [prop]: pos.toFixed(2) })
+            updatedBlock: Object.assign({}, currentBlock, { [prop]: getTimeString(pos) })
         });
     }
 
@@ -151,7 +152,7 @@ class Editor extends Component {
                 </div>
                 <div className={styles.time}>
                     {currentTimingIndex >= 0 && <div className={styles.timeBlock}>Start time: <div className={styles.timeValue}>{startTime}</div></div>}
-                    <div className={styles.timeBlock}>Current time: <div className={styles.timeValue}>{pos.toFixed(2)}</div></div>
+                    <div className={styles.timeBlock}>Current time: <div className={styles.timeValue}>{getTimeString(pos)}</div></div>
                     {currentTimingIndex >= 0 && <div className={styles.timeBlock}>End time: <div className={styles.timeValue}>{endTime}</div></div>}
                 </div>
                 <div className={styles.buttonPanel}>

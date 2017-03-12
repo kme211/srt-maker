@@ -73,23 +73,17 @@ app.on('ready', async () => {
   });
 
   ipcMain.on('export-to-srt', (event, data) => {
-    console.log('data', data)
     dialog.showSaveDialog({
       title: "Save file",
       defaultPath: data.length > 1 ? null : data[0].fileName
     }, (fileName) => {
-      console.log('save dialog closed', fileName);
       if(!fileName) return;
       data.forEach(function(file) {
         const fileData = file.timing.map((block, index) => {
-        const startTime = block.startTime.split('.');
-        const [ startMins, startSeconds ] = startTime;
-        const endTime = block.endTime.split('.');
-        const [ endMins, endSeconds ] = endTime;
           return `
 ${index + 1}\r\n
-00:${},000 --> ${block.endTime}\r\n
-00:${block.text},000\r\n
+${block.startTime} --> ${block.endTime}\r\n
+${block.text}\r\n
 `;
         })
         fs.writeFile(fileName, fileData.join('\r\n'), 'utf-8', function(err) {
