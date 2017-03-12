@@ -58,7 +58,10 @@ class Editor extends Component {
 
     handleKeyDown(e) {
         if(this.state.transcriptModalIsOpen) return;
-        const block = this.props.file.timing[this.state.currentTimingIndex];
+        const { currentTimingIndex } = this.state;
+        const timing = this.props.file.timing;
+        const maxTimingIndex = timing.length - 1;
+        const block = timing[currentTimingIndex];
 
         const key = e.key;
 
@@ -67,6 +70,10 @@ class Editor extends Component {
                 return block && this.handleTimingChange.call(this, 'startTime');
             case 'd': 
                 return block && this.handleTimingChange.call(this, 'endTime');
+            case 's':
+                return currentTimingIndex < maxTimingIndex && this.setState({ currentTimingIndex: currentTimingIndex + 1 });
+            case 'w':
+                return currentTimingIndex > 0 && this.setState({ currentTimingIndex: currentTimingIndex - 1 });
             case ' ':
                 return this.handleTogglePlay();
         }

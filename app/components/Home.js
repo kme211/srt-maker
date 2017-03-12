@@ -147,6 +147,8 @@ class Home extends Component {
             <h1>Keyboard shortcuts</h1>
             <p><code>a</code> set start time</p>
             <p><code>d</code> set end time</p>
+            <p><code>w</code> select previous text block</p>
+            <p><code>s</code> select next text block</p>
             <p><code>spacebar</code> toggle play/pause</p>
             <button onClick={this.toggleKeyboardShortcutsModal}>Close</button>
           </div>
