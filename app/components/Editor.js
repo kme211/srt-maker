@@ -101,6 +101,7 @@ class Editor extends Component {
     }
 
     handleTimingChange(prop) {
+        const validationErrors = [];
         const { file } = this.props;
         const { currentTimingIndex, pos } = this.state;
         const currentBlock = file.timing[currentTimingIndex];
@@ -139,7 +140,7 @@ class Editor extends Component {
         const block = timing[currentTimingIndex];
         const fileName = file.filePath.split('\\').pop();
         const { startTime, endTime } = block || { startTime: 'not set', endTime: 'not set' };
-        const complete = timing.every(block => block.startTime !== 'not set' && block.endTime !== 'not set');
+        const complete = timing.length ? timing.every(block => block.startTime !== 'not set' && block.endTime !== 'not set') : false;
         return (
             <div className={styles.editor}>
                 <div className={styles.waveform}>
@@ -176,7 +177,8 @@ class Editor extends Component {
                     resetTranscript={this.resetTranscript}
                     saveTranscript={this.saveTranscript} />
 
-                {complete && <button onClick={this.exportCurrentFile}>Export</button>}
+                <div className={styles.buttonPanelBottom}><button disabled={!complete} onClick={this.exportCurrentFile}>Export</button></div>    
+                
             </div>
         );
     }

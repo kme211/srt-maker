@@ -59,6 +59,12 @@ button:hover {
   color: white;
 }
 
+button:disabled {
+  pointer-events: none;
+  color: #4e4e4f;
+  border: 1px solid #4e4e4f;
+}
+
 code {
     background: rgba(255, 255, 255, 0.1);
     padding: 3px 5px;

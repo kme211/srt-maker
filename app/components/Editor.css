@@ -7,13 +7,20 @@
 
 .waveform,
 .time,
-.buttonPanel {
+.buttonPanel,
+.buttonPanelBottom {
     flex: 1 1 100%;
 }
 
 .buttonPanel {
     display: flex;
     justify-content: space-around;
+}
+
+.buttonPanelBottom {
+    display: flex;
+    justify-content: space-between;
+    align-self: flex-end;
 }
 
 .setTimeBtn:before {
