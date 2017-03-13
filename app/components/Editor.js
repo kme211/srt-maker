@@ -43,7 +43,10 @@ class Editor extends Component {
     }
 
     componentDidMount() {
-        window.addEventListener('keydown', this.handleKeyDown)
+        window.addEventListener('keydown', this.handleKeyDown);
+        window.addEventListener('animationEnd', (e) => {
+            console.log('animationEnd', e)
+        })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -118,17 +121,17 @@ class Editor extends Component {
         const currentStartTime = +currentBlock.startTimeSeconds;
         if(prop === 'startTime' && currentEndTime >= 0) {
             if(currentPos === currentEndTime) {
-                validationErrors.push('Start time and end time cannot be equal.');
+                validationErrors.push({ id: 0, button: prop, msg: 'Start time and end time cannot be equal.' });
             }
             if(currentPos > currentEndTime) {
-                validationErrors.push('Start time cannot be greater than the end time.');
+                validationErrors.push({ id: 1, button: prop, msg: 'Start time cannot be greater than the end time.' });
             }
         } else if(prop ===  'endTime' && currentStartTime >= 0) {
             if(currentPos === currentStartTime) {
-                validationErrors.push('Start time and end time cannot be equal.');
+                validationErrors.push({ id: 2, button: prop, msg: 'Start time and end time cannot be equal.' });
             }
             if(currentPos < currentStartTime) {
-                validationErrors.push('End time cannot be less than start time.');
+                validationErrors.push({ id: 3, button: prop, msg: 'End time cannot be less than start time.' });
             }
         }
 
@@ -168,6 +171,8 @@ class Editor extends Component {
         const { file } = this.props;
         const timing = file.timing;
         const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming, validationErrors } = this.state;
+        const setStartTimeBtnClass = validationErrors.find(err => err.button === 'startTime') ? styles.setTimeBtnShake : styles.setTimeBtn;
+        const setEndTimeBtnClass = validationErrors.find(err => err.button === 'endTime') ? styles.setTimeBtnShake : styles.setTimeBtn;
         const block = timing[currentTimingIndex];
         const sep = file.filePath.match('\\\\') ? '\\' : '/';
         const fileName = file.filePath.split(sep).pop();
@@ -190,13 +195,13 @@ class Editor extends Component {
                 </div>
 
                 <div className={styles.validationErrors}>
-                    {validationErrors.map((err, index) => <div key={index}>{err}</div>)}
+                    {validationErrors.map((err) => <div key={err.id}>{err.msg}</div>)}
                 </div>
 
                 <div className={styles.buttonPanel}>
-                    {currentTimingIndex >= 0 && <button className={styles.setTimeBtn} onClick={this.handleTimingChange.bind(this, 'startTime')}>Set start</button>}
+                    {currentTimingIndex >= 0 && <button className={setStartTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'startTime')}>Set start</button>}
                     <button onClick={this.handleTogglePlay}>{playing ? <i className="fa fa-pause" aria-hidden="true"></i> : <i className="fa fa-play" aria-hidden="true"></i>}</button>
-                    {currentTimingIndex >= 0 && <button className={styles.setTimeBtn} onClick={this.handleTimingChange.bind(this, 'endTime')}>Set end</button>}
+                    {currentTimingIndex >= 0 && <button className={setEndTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'endTime')}>Set end</button>}
                 </div>
                 <div className={styles.transcript}>
                     {timing.length ?  <Transcript timing={timing} currentTimingIndex={currentTimingIndex} setCurrentTimingIndex={this.setCurrentTimingIndex} /> : <button onClick={this.openModal}>Add transcript</button>}

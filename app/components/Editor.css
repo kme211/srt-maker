@@ -29,7 +29,12 @@
     align-self: flex-end;
 }
 
-.setTimeBtn:before {
+.setTimeBtnShake {
+    animation: shake 150ms 2 linear;
+}
+
+.setTimeBtn:before,
+.setTimeBtnShake:before {
     content: '\f02e';
     display: block;
     font: normal normal normal 14px/1 FontAwesome;
@@ -79,4 +84,16 @@
 .transcript button {
     margin: 0 auto;
     display: block;
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(3px, 0);
+    }
+    50% {
+        transform: translate(-3px, 0);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
 }
