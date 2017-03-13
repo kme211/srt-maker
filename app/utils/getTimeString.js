@@ -10,7 +10,7 @@ function getTimeString(rawSeconds) {
     totalMins = totalMins - 60;
   }
   let mins = Math.floor(totalMins);
-  let totalSeconds = (totalMins - mins) * 60;
+  let totalSeconds = rawSeconds % 60;
   let seconds = Math.floor(totalSeconds);
   let milliseconds = (totalSeconds - seconds).toFixed(3).slice(2);
   return `${pad(hours, 2)}:${pad(mins, 2)}:${pad(seconds, 2)},${pad(milliseconds, 3)}`;
