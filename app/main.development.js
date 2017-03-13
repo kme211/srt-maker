@@ -81,12 +81,12 @@ app.on('ready', async () => {
       data.forEach(function(file) {
         const fileData = file.timing.map((block, index) => {
           return `
-${index + 1}\r\n
-${block.startTime} --> ${block.endTime}\r\n
-${block.text}\r\n
+${index + 1}
+${block.startTime} --> ${block.endTime}
+${block.text.trim()}
 `;
         })
-        fs.writeFile(fileName, fileData.join('\r\n'), 'utf-8', function(err) {
+        fs.writeFile(fileName, fileData.join(''), 'utf-8', function(err) {
           if(err) return console.log(err);
           console.log('file written to ' + fileName);
           event.sender.send('file-written', fileName);
