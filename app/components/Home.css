@@ -45,7 +45,7 @@
 
 .leftBar {
   background: rgba(255, 255, 255, 0.05);
-  min-width: 15%;
+  min-width: 300px;
 }
 
 .leftBar h3 {
