@@ -114,7 +114,6 @@ class Home extends Component {
 
             <div className={styles.middle}>
               <div className={styles.leftBar}>
-                <h3>Audio</h3>
                 {this.props.files.length ? <AudioList files={files} currentFileId={currentFileId} onClick={this.updateCurrentFileId} /> : <div className={styles.leftBarEmpty}>Nothing yet.</div>}
               </div>
 

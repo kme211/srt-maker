@@ -1,8 +1,24 @@
-.list {
+.audioFiles {
     color: #95989A;
     margin: 0;
     padding: 0;
     width: 100%;
+    height: 100%;
+    font-size: 0.9rem;
+}
+
+.audioFiles h3 {
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+.audioFiles h3 span {
+    color: #6f6f70;
+}
+
+.audioFiles ul {
+    padding: 0;
+    margin: 0.25rem 0 0.5rem 0;
 }
 
 .listItem,
