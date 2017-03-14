@@ -16,43 +16,26 @@ class WaveformPeaks extends Component {
 
         this.ctx = new AudioContext();
 
-        this.resolveAudioPromise = null;
         this.resolveContainerPromise = null;
-        const promises = [
-            new Promise((resolve, reject) => {
-                this.resolveAudioPromise = resolve;
-            }),
-            new Promise((resolve, reject) => {
-                this.resolveContainerPromise = resolve;
-            })
-        ];
-        
-        Promise.all(promises).then(this.initPeaks.bind(this));
+
+        this.container = new Promise((resolve, reject) => {
+            this.resolveContainerPromise = resolve;
+        });
 
         this.onAudio = this.onAudio.bind(this);
         this.onContainer = this.onContainer.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if(this.props.filePath !== nextProps.filePath) {
-            console.log('destroy peaks')
-            this.peaks.destroy();
-            this.peaks = null;
-            this.audio.src = nextProps.filePath;
-            this.initPeaks();
-        }
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        console.log('componentDidUpdate')
+        //console.log('componentDidUpdate')
+        if(prevProps.filePath !== this.props.filePath) {
+            this.audio.src = this.props.filePath;
+        }
+
         if(this.props.playing && !prevProps.playing) {
             this.audio.play();
         } else if(!this.props.playing && prevProps.playing) {
             this.audio.pause();
-        }
-        if(this.props.segments !== prevProps.segments) {
-            console.log('segments changed')
-            this.addSegments();
         }
     }
 
@@ -81,24 +64,29 @@ class WaveformPeaks extends Component {
         this.audio = audio;
         this.audio.addEventListener('loadedmetadata', () => {
             console.log('audio loadedmetadata', audio.currentSrc);
-            this.resolveAudioPromise();
+            this.container.then((container) => {
+                this.initPeaks(container, audio);
+            });
         });
         this.audio.addEventListener('timeupdate', (e) => {
-            //console.log('audio timeupdate', this.audio.currentTime);
+            console.log('audio timeupdate', this.audio.currentTime);
             this.props.handlePosChange(this.audio.currentTime);
         });
     }
 
     onContainer(container) {
         console.log('save container ref');
-        this.container = container;
-        this.resolveContainerPromise();
+        this.resolveContainerPromise(container);
     }
 
-    initPeaks() {
+    initPeaks(container, audio) {
         console.log('initPeaks');
-        const container = this.container;
-        const audio = this.audio;
+        if(this.peaks) {
+            console.log('destroy peaks');
+            this.peaks.destroy();
+            this.peaks = null;
+        }
+        
         const ctx = this.ctx;
 
         this.peaks = Peaks.init({
@@ -135,8 +123,8 @@ class WaveformPeaks extends Component {
         
         return (
             <div>
-                <div id="peaks-container" ref={(container) => { !this.container && this.onContainer(container); }}></div>
-                <audio ref={(audio) => { !this.audio && this.onAudio(audio); }}  src={filePath}>
+                <div id="peaks-container" ref={(container) => { !this.peaks && this.onContainer(container); }}></div>
+                <audio ref={(audio) => { !this.peaks && this.onAudio(audio); }}  src={filePath}>
                 </audio>
             </div>
         );
