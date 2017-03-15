@@ -94,11 +94,9 @@ class WaveformPeaks extends Component {
         this.audio.addEventListener('loadedmetadata', () => {
             console.log('audio loadedmetadata', 'src', audio.currentSrc, 'duration', audio.duration);
             this.container.then((container) => { 
-                this.timeoutId = window.setTimeout(() => {
-                    this.adjustContainer(container, () => {
-                        this.initPeaks(container, audio);
-                    });
-                }, 400);
+                this.adjustContainer(container, () => {
+                    this.initPeaks(container, audio);
+                });
             });
         });
         this.audio.addEventListener('timeupdate', (e) => {
