@@ -1,7 +1,9 @@
 // @flow
 import React, { Component } from 'react';
 import Peaks from '../../node_modules/peaks.js/peaks.js';
+import styles from './WaveformPeaks.css';
 import Colors from './Colors';
+import LoadingDots from './LoadingDots';
 
 class WaveformPeaks extends Component {
     props: {
@@ -15,7 +17,8 @@ class WaveformPeaks extends Component {
         super(props);
 
         this.state = {
-            width: '100%'
+            width: '100%',
+            loading: true
         };
 
         this.ctx = new AudioContext();
@@ -36,7 +39,12 @@ class WaveformPeaks extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.filePath !== this.props.filePath) {
+            window.clearTimeout(this.timeoutId);
             this.audio.src = this.props.filePath;
+            this.setState({
+                width: '100%',
+                loading: true
+            });
         }
 
         if(this.props.playing && !prevProps.playing) {
@@ -53,7 +61,7 @@ class WaveformPeaks extends Component {
         const { segments, fileName } = this.props;
 
         if(peaks.segments && peaks.segments.add && peaks.segments.removeAll) {
-            
+
             peaks.segments.removeAll()
             segments.forEach(({ startTimeSeconds, endTimeSeconds, id }, index) => {
                 peaks.segments.add({
@@ -70,7 +78,7 @@ class WaveformPeaks extends Component {
 
     adjustContainer(container, callback = () => {}) {
         console.log('adjustContainer', container);
-        const maxWidth = this.audio.duration * 93;
+        const maxWidth = this.audio.duration * 92;
         let width = '100%';
         if(container.offsetWidth > maxWidth) {
             console.log('have to shrink waveform container');
@@ -85,11 +93,12 @@ class WaveformPeaks extends Component {
         this.audio = audio;
         this.audio.addEventListener('loadedmetadata', () => {
             console.log('audio loadedmetadata', 'src', audio.currentSrc, 'duration', audio.duration);
-            console.log(this.container)
-            this.container.then((container) => {
-                this.adjustContainer(container, () => {
-                    this.initPeaks(container, audio);
-                });
+            this.container.then((container) => { 
+                this.timeoutId = window.setTimeout(() => {
+                    this.adjustContainer(container, () => {
+                        this.initPeaks(container, audio);
+                    });
+                }, 400);
             });
         });
         this.audio.addEventListener('timeupdate', (e) => {
@@ -107,6 +116,7 @@ class WaveformPeaks extends Component {
 
     initPeaks(container, audio) {
         console.log('initPeaks');
+        
         if(this.peaks) {
             console.log('destroy peaks');
             this.peaks.destroy();
@@ -142,6 +152,9 @@ class WaveformPeaks extends Component {
         this.peaks.on('segments.ready', () => {
             console.log('peaks segments ready');
             //this.addSegments();
+            this.timeoutId = window.setTimeout(() => {
+                this.setState({ loading: false });
+            }, 400);
         });
 
         this.peaks.on('user_seek.overview', (pos) => {
@@ -151,16 +164,22 @@ class WaveformPeaks extends Component {
         this.peaks.on('user_seek.zoomview', (pos) => {
             console.log('user_seek.zoomview', pos);
         });
+        
     }
 
     render() {
         
         const { filePath, pos, handlePosChange, playing } = this.props;
-        console.log('render ', filePath)
+        const { loading, width } = this.state;
+        console.log('render waveform. loading: ', loading);
         
         return (
-            <div>
-                <div id="peaks-container" ref={(container) => { !this.containerSet && this.onContainer(container); }} style={{ width: this.state.width, margin: '0 auto' }}></div>
+            <div className={styles.container}>
+
+                {loading && <div className={styles.loader}><LoadingDots/></div>}
+                
+                <div id="peaks-container" ref={(container) => { !this.containerSet && this.onContainer(container); }} className={styles.waveform} style={{ width: width }}>
+                </div>
                 <audio ref={(audio) => { !this.audio && this.onAudio(audio); }}  src={filePath}/>
             </div>
         );
