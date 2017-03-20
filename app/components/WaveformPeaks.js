@@ -31,11 +31,13 @@ class WaveformPeaks extends Component {
         });
 
         this.container.then((container) => {
-            window.addEventListener('resize', this.adjustContainer.bind(this, container));
+           window.addEventListener('resize', this.adjustContainer.bind(this, container, '100%', () => {}));
+           window.addEventListener('error', this.handlePeaksErrors.bind(this, container));
         });
 
         this.onAudio = this.onAudio.bind(this);
         this.updateCurrentTime = this.updateCurrentTime.bind(this);
+        this.handlePeaksErrors = this.handlePeaksErrors.bind(this);
         this.onContainer = this.onContainer.bind(this);
     }
 
@@ -91,12 +93,17 @@ class WaveformPeaks extends Component {
         });
     }
 
-    adjustContainer(container, callback) {
+    adjustContainer(container, targetWidth, callback) {
         const maxWidth = this.audio.duration * 92;
         let width = '100%';
-        if(container.offsetWidth > maxWidth) {
-            width = `${maxWidth}px`; 
+        if(!targetWidth) {
+            if(container.offsetWidth > maxWidth) {
+                width = `${maxWidth}px`; 
+            }
+        } else {
+            width = targetWidth;
         }
+        
         this.setState({ width }, callback);
     }
 
@@ -104,7 +111,7 @@ class WaveformPeaks extends Component {
         this.audio = audio;
         this.audio.addEventListener('loadedmetadata', () => {
             this.container.then((container) => { 
-                this.adjustContainer(container, () => {
+                this.adjustContainer(container, null, () => {
                     this.initPeaks(container, audio);
                 });
             });
@@ -117,6 +124,14 @@ class WaveformPeaks extends Component {
     onContainer(container) {
         this.containerSet = true;
         this.resolveContainerPromise(container);
+    }
+
+    handlePeaksErrors(container, error) {
+        if(error.message.match(/zoom level \d+ too low/ig)) {
+            this.adjustContainer(container, null, () => {
+                this.initPeaks(container, this.audio);
+            });
+        }
     }
 
     initPeaks(container, audio) {
@@ -147,8 +162,9 @@ class WaveformPeaks extends Component {
             })
         });
 
-        this.peaks.on('error', (err) => {
-            console.log('peaks had an error', err);
+        this.peaks.on('error', (error) => {
+            console.log('peaks had an error');
+            this.handlePeaksErrors(container, error);
         });
 
         this.peaks.on('segments.ready', () => {
