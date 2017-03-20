@@ -1,6 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import Peaks from '../../node_modules/peaks.js/peaks.js';
+//import Peaks from 'peaks.js';
 import styles from './WaveformPeaks.css';
 import Colors from './Colors';
 import LoadingDots from './LoadingDots';
