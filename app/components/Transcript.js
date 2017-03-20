@@ -19,7 +19,7 @@ class Transcript extends Component {
                     const { startTime, endTime } = block;
                     const complete = startTime !== 'not set' && endTime !== 'not set';
                     const itemClass = currentTimingIndex === index ? styles.textBlockSelected : styles.textBlock;
-                    const inlineStyles = complete ? { background: Colors[index] } : {};
+                    const inlineStyles = complete ? { background: Colors[index], border: `2px solid ${Colors[index]}` } : {};
                     return (
                         <span 
                             key={index} 
