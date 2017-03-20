@@ -35,6 +35,7 @@ class WaveformPeaks extends Component {
         });
 
         this.onAudio = this.onAudio.bind(this);
+        this.updateCurrentTime = this.updateCurrentTime.bind(this);
         this.onContainer = this.onContainer.bind(this);
     }
 
@@ -48,52 +49,60 @@ class WaveformPeaks extends Component {
             });
         }
 
+        if(prevProps.segments !== this.props.segments) {
+            this.updateSegments();
+        }
+
         if(this.props.playing && !prevProps.playing) {
             this.audio.play();
+            this.updateCurrentTime();
         } else if(!this.props.playing && prevProps.playing) {
             this.audio.pause();
         }
     }
 
-    addSegments() {
-        // Need to optimize this
-        console.log('addSegments')
-        const peaks = this.peaks;
-        const { segments, fileName } = this.props;
-
-        if(peaks.segments && peaks.segments.add && peaks.segments.removeAll) {
-
-            peaks.segments.removeAll()
-            segments.forEach(({ startTimeSeconds, endTimeSeconds, id }, index) => {
-                peaks.segments.add({
-                    startTime: startTimeSeconds, 
-                    endTime: endTimeSeconds, 
-                    color: Colors[index], 
-                    labelText: `${fileName}_${index + 1}`,
-                    id,
-                    editable: true
-                });
-            });
-        }
+    componentWillMount() {
+        this.ctx.close();
     }
 
-    adjustContainer(container, callback = () => {}) {
-        console.log('adjustContainer', container);
+    updateCurrentTime() {
+        this.props.handlePosChange(this.audio.currentTime);
+        if(!this.props.playing) return;
+        window.requestAnimationFrame(this.updateCurrentTime);
+    }
+
+    updateSegments() {
+        const peaks = this.peaks;
+        if(!peaks.segments) return;
+        const { segments, fileName } = this.props;
+        const peaksSegments = peaks.segments.getSegments();
+        segments.forEach(({ id, startTimeSeconds: startTime, endTimeSeconds: endTime }, index) => {
+            const peaksSegment = peaksSegments.find(s => s.id === id);
+            if(!peaksSegment || peaksSegment.startTime !== startTime || peaksSegment.endTime !== endTime) {
+                peaks.segments.removeById(id);
+                peaks.segments.add({
+                    startTime: startTime, 
+                    endTime: endTime, 
+                    color: Colors[index], 
+                    labelText: `${fileName}_${index + 1}`,
+                    id
+                })
+            }
+        });
+    }
+
+    adjustContainer(container, callback) {
         const maxWidth = this.audio.duration * 92;
         let width = '100%';
         if(container.offsetWidth > maxWidth) {
-            console.log('have to shrink waveform container');
             width = `${maxWidth}px`; 
         }
-
         this.setState({ width }, callback);
     }
 
     onAudio(audio) {
-        console.log('save audio ref', audio);
         this.audio = audio;
         this.audio.addEventListener('loadedmetadata', () => {
-            console.log('audio loadedmetadata', 'src', audio.currentSrc, 'duration', audio.duration);
             this.container.then((container) => { 
                 this.adjustContainer(container, () => {
                     this.initPeaks(container, audio);
@@ -101,23 +110,18 @@ class WaveformPeaks extends Component {
             });
         });
         this.audio.addEventListener('timeupdate', (e) => {
-            console.log('audio timeupdate', this.audio.currentTime);
-            // this isn't very smooth; switch to requestAnimationFrame
-            this.props.handlePosChange(this.audio.currentTime);
+            this.updateCurrentTime();
         });
     }
 
     onContainer(container) {
-        console.log('save container ref');
         this.containerSet = true;
         this.resolveContainerPromise(container);
     }
 
     initPeaks(container, audio) {
-        console.log('initPeaks');
         
         if(this.peaks) {
-            console.log('destroy peaks');
             this.peaks.destroy();
             this.peaks = null;
         }
@@ -138,8 +142,7 @@ class WaveformPeaks extends Component {
                     endTime: endTimeSeconds, 
                     color: Colors[index], 
                     labelText: `${fileName}_${index + 1}`,
-                    id,
-                    editable: true
+                    id
                 };
             })
         });
@@ -149,19 +152,9 @@ class WaveformPeaks extends Component {
         });
 
         this.peaks.on('segments.ready', () => {
-            console.log('peaks segments ready');
-            //this.addSegments();
             this.timeoutId = window.setTimeout(() => {
                 this.setState({ loading: false });
             }, 400);
-        });
-
-        this.peaks.on('user_seek.overview', (pos) => {
-            console.log('user_seek.overview', pos);
-        });
-
-        this.peaks.on('user_seek.zoomview', (pos) => {
-            console.log('user_seek.zoomview', pos);
         });
         
     }
@@ -170,7 +163,6 @@ class WaveformPeaks extends Component {
         
         const { filePath, pos, handlePosChange, playing } = this.props;
         const { loading, width } = this.state;
-        console.log('render waveform. loading: ', loading);
         
         return (
             <div className={styles.container}>
