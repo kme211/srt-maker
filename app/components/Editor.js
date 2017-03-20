@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styles from './Editor.css';
 import TranscriptModal from './TranscriptModal';
 import Transcript from './Transcript';
-import Waveform from './Waveform';
+import WaveformPeaks from './WaveformPeaks';
 import getTimeString from '../utils/getTimeString';
 
 class Editor extends Component {
@@ -99,8 +99,8 @@ class Editor extends Component {
             playing: !this.state.playing
         });
     }
-    handlePosChange(e) {
-        this.setState({ pos: e.originalArgs[0] });
+    handlePosChange(pos) {
+        this.setState({ pos: pos });
     }
 
     updateTempTranscriptText(e) {
@@ -181,11 +181,13 @@ class Editor extends Component {
         return (
             <div className={styles.editor}>
                 <div className={styles.waveform}>
-                    <Waveform 
+                    <WaveformPeaks 
                         filePath={file.filePath}
+                        fileName={fileName.slice(0, -4)}
                         pos={pos}
                         playing={playing}
                         handlePosChange={this.handlePosChange}
+                        segments={timing.filter(block => block.startTimeSeconds && block.endTimeSeconds)}
                     />
                 </div>
                 <div className={styles.time}>

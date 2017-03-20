@@ -3113,6 +3113,10 @@ event-emitter@~0.3.4:
     d "~0.1.1"
     es5-ext "~0.10.7"
 
+eventemitter2@~1.0.0:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-1.0.5.tgz#f983610517b1737c0b9dc643beca93893c04df18"
+
 events@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
@@ -4747,6 +4751,10 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
+konva@~1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-1.2.2.tgz#ed72bee1d7f51c3ddd09b8dc0a87bf9a1ef82f43"
+
 latest-version@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/latest-version/-/latest-version-3.0.0.tgz#3104f008c0c391084107f85a344bc61e38970649"
@@ -5801,6 +5809,14 @@ pbkdf2@^3.0.3:
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.9.tgz#f2c4b25a600058b3c3773c086c37dbbee1ffe693"
   dependencies:
     create-hmac "^1.1.2"
+
+peaks.js:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/peaks.js/-/peaks.js-0.6.0.tgz#4e6e7124d125eec5f163c7fce2827004f2207a5e"
+  dependencies:
+    eventemitter2 "~1.0.0"
+    konva "~1.2.2"
+    waveform-data "^2.0.0"
 
 pend@~1.2.0:
   version "1.2.0"
@@ -7623,6 +7639,10 @@ watchpack@^0.2.1:
     async "^0.9.0"
     chokidar "^1.0.0"
     graceful-fs "^4.1.2"
+
+waveform-data@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-2.0.0.tgz#8bc026e32a7110f6bfdd48badab4d4f59590943f"
 
 wavesurfer.js:
   version "1.3.4"
