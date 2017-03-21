@@ -49,6 +49,10 @@ class Home extends Component {
     ipcRenderer.on('session-filename', (event) => {
       event.sender.send('session-data', JSON.stringify(this.props.files));
     });
+
+    ipcRenderer.on('session-loaded', (event, data) => {
+      this.props.addFiles(JSON.parse(data));
+    });
   }
 
   exportToSrt(ids: string[]) {
