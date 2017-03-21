@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, shell,  dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, shell,  dialog, ipcMain, ipcRenderer } from 'electron';
 import fs from 'fs';
 
 let menu;
@@ -86,7 +86,7 @@ ${block.startTime} --> ${block.endTime}
 ${block.text.trim()}
 `;
         })
-        fs.writeFile(fileName, fileData.join(''), 'utf-8', function(err) {
+        fs.writeFile(fileName, fileData.join(''), 'utf-8', (err) => {
           if(err) return console.log(err);
           console.log('file written to ' + fileName);
           event.sender.send('file-written', fileName);
@@ -95,6 +95,28 @@ ${block.text.trim()}
       
     });
   });
+
+  function requestSessionData(fileName) {
+    mainWindow.webContents.send('session-filename');
+    ipcMain.once('session-data', (event, data) => {
+      fs.writeFile(fileName, data, 'utf-8', (err) => {
+        if(err) return console.error(err);
+        console.log('session data saved to ' + fileName);
+      });
+    });
+  }
+
+  function saveSession() {
+    dialog.showSaveDialog({
+      title: 'Save session',
+      defaultPath: 'session.json',
+      filters: [
+        { name: 'JSON', extensions: ['json']}
+      ]
+    }, (fileName) => {
+      requestSessionData(fileName);
+    });
+  }
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();
@@ -248,6 +270,12 @@ ${block.text.trim()}
       submenu: [{
         label: '&Open',
         accelerator: 'Ctrl+O'
+      },{
+        label: '&Save',
+        accelerator: 'Ctrl+S',
+        click() {
+          saveSession();
+        }
       }, {
         label: '&Close',
         accelerator: 'Ctrl+W',
