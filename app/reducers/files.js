@@ -1,7 +1,8 @@
 // @flow
 import { ADD_FILES, UPDATE_FILE } from '../actions/files';
 
-export type fileType = {filePath: string, timing: {text: string, startTime: string, endTime: string}[], id: string};
+export type timingType = {text: string, startTime: string, endTime: string};
+export type fileType = {filePath: string, timing: timingType[], id: string};
 
 type actionType = {
   type: string

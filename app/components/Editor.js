@@ -5,6 +5,8 @@ import TranscriptModal from './TranscriptModal';
 import Transcript from './Transcript';
 import WaveformPeaks from './WaveformPeaks';
 import getTimeString from '../utils/getTimeString';
+import { timingType } from '../reducers/files.js';
+import { VALIDATION_ERROR_MESSAGES } from './constants';
 
 class Editor extends Component {
     props: {
@@ -111,36 +113,49 @@ class Editor extends Component {
         this.setState({ tempTiming: newTiming });
     }
 
-    handleTimingChange(prop: string) {
+    createValidationError(button: string, id: number) {
+        return { id, button, msg: VALIDATION_ERROR_MESSAGES[id] };
+    }
+
+    getValidationErrors(timing: timingType[], currentTimingIndex: number, currentPos: number, prop: string) {
         const validationErrors = [];
-        const { file } = this.props;
-        const { currentTimingIndex, pos } = this.state;
-        const currentBlock = file.timing[currentTimingIndex];
-        const currentPos = +pos;
+        const currentBlock = timing[currentTimingIndex];
+        const lastTimingIndex = timing.length - 1;
+        let prevBlock;
+        let nextBlock;
+        if(currentTimingIndex > 0) prevBlock = timing[currentTimingIndex - 1];
+        if(currentTimingIndex < lastTimingIndex) nextBlock = timing[currentTimingIndex + 1];
         const currentEndTime = +currentBlock.endTimeSeconds;
         const currentStartTime = +currentBlock.startTimeSeconds;
-        if(prop === 'startTime' && currentEndTime >= 0) {
-            if(currentPos === currentEndTime) {
-                validationErrors.push({ id: 0, button: prop, msg: 'Start time and end time cannot be equal.' });
+        const createValidationError = this.createValidationError.bind(this, prop);
+
+        if(prop === 'startTime') {
+            if(currentEndTime >= 0) {
+                if(currentPos === currentEndTime) validationErrors.push(createValidationError(0));
+                if(currentPos > currentEndTime) validationErrors.push(createValidationError(1));
             }
-            if(currentPos > currentEndTime) {
-                validationErrors.push({ id: 1, button: prop, msg: 'Start time cannot be greater than the end time.' });
+            if(prevBlock && prevBlock.endTimeSeconds && currentPos < prevBlock.endTimeSeconds) validationErrors.push(createValidationError(2));
+        } else if(prop ===  'endTime') {
+            if(currentStartTime >= 0) {
+                if(currentPos === currentStartTime) validationErrors.push(createValidationError(3));
+                if(currentPos < currentStartTime) validationErrors.push(createValidationError(4));
             }
-        } else if(prop ===  'endTime' && currentStartTime >= 0) {
-            if(currentPos === currentStartTime) {
-                validationErrors.push({ id: 2, button: prop, msg: 'Start time and end time cannot be equal.' });
-            }
-            if(currentPos < currentStartTime) {
-                validationErrors.push({ id: 3, button: prop, msg: 'End time cannot be less than start time.' });
-            }
+            if(nextBlock && nextBlock.startTimeSeconds && currentPos > nextBlock.startTimeSeconds) validationErrors.push(createValidationError(5));
         }
+        return validationErrors;
+    }
+
+    handleTimingChange(prop: string) {
+        const { file } = this.props;
+        const { currentTimingIndex, pos } = this.state;
+        const validationErrors = this.getValidationErrors(file.timing, currentTimingIndex, +pos, prop);
 
         this.setState({ validationErrors });
 
         if(validationErrors.length === 0) {
             this.props.updateTiming({ 
                 id: file.id, 
-                updatedBlock: Object.assign({}, currentBlock, { [prop]: getTimeString(pos), [prop + 'Seconds']: pos })
+                updatedBlock: Object.assign({}, file.timing[currentTimingIndex], { [prop]: getTimeString(pos), [prop + 'Seconds']: pos })
             });
         }
     }
