@@ -55,6 +55,13 @@ class Home extends Component {
     });
   }
 
+
+  componentDidUpdate(prevProps, prevState) {
+    if(!prevProps.files.length && this.props.files.length) {
+      this.setState({ currentFileId: this.props.files[0].id });
+    }
+  }
+
   exportToSrt(ids: string[]) {
     const data = [];
     for(let id of ids) {
