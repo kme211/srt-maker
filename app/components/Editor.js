@@ -6,6 +6,7 @@ import Transcript from './Transcript';
 import WaveformPeaks from './WaveformPeaks';
 import getTimeString from '../utils/getTimeString';
 import getValidationErrors from '../utils/getValidationErrors';
+import ScrollArea from 'react-scrollbar';
 
 class Editor extends Component {
     props: {
@@ -187,10 +188,10 @@ class Editor extends Component {
                     <button onClick={this.handleTogglePlay}>{playing ? <i className="fa fa-pause" aria-hidden="true"></i> : <i className="fa fa-play" aria-hidden="true"></i>}</button>
                     {currentTimingIndex >= 0 && <button className={setEndTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'endTime')}>Set end</button>}
                 </div>
-                <div className={styles.transcript}>
+                <ScrollArea className={styles.transcript} speed={0.8} horizontal={false}>
                     {timing.length ?  <Transcript timing={timing} currentTimingIndex={currentTimingIndex} setCurrentTimingIndex={this.setCurrentTimingIndex} /> : <button onClick={this.openModal}>Add transcript</button>}
                     
-                </div>
+                </ScrollArea>
 
                 <TranscriptModal 
                     isOpen={this.state.transcriptModalIsOpen}

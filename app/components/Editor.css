@@ -12,15 +12,25 @@
     flex: 1 1 100%;
 }
 
+.waveform {
+    margin-bottom: 1.5rem;
+}
+
 .buttonPanel {
     display: flex;
     justify-content: space-around;
 }
 
+.buttonPanel,
+.transcript {
+    max-width: 800px;
+    margin: 0 auto 1.5rem auto;
+}
+
 
 .buttonPanel > * {
-    flex: 0 1 100px;
-    height: 100px;
+    flex: 0 1 80px;
+    height: 80px;
 }
 
 .buttonPanelBottom {
@@ -48,7 +58,7 @@
     display: flex;
     justify-content: center;
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .time > * {
@@ -79,6 +89,8 @@
 
 .transcript {
     flex: 1 1 100%;
+    height: calc(100% - 441px);
+    align-content: center;
 }
 
 .transcript button {

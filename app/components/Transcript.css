@@ -21,3 +21,10 @@
     opacity: 1;
     border: 2px solid rgba(0, 0, 0, 0) !important;
 }
+
+.container {
+    height: 18vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
