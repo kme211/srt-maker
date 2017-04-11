@@ -20,6 +20,7 @@ class AudioList extends Component {
                 horizontal={false}
                 >
                 <h3>Audio files <span>({files.length})</span></h3>
+                {!files.length && <div className={styles.emptyState}>No audio added yet!</div>}
                 <ul>
                     {files.map((file, index) => {
                         const itemStyles = currentFileId === file.id ? styles.listItemSelected : styles.listItem;

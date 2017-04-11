@@ -122,7 +122,7 @@ class Home extends Component {
 
             <div className={styles.middle}>
               <div className={styles.leftBar}>
-                {this.props.files.length ? <AudioList files={files} currentFileId={currentFileId} onClick={this.updateCurrentFileId} /> : <div className={styles.leftBarEmpty}>Nothing yet.</div>}
+                <AudioList files={files} currentFileId={currentFileId} onClick={this.updateCurrentFileId} />
               </div>
 
               {currentFileId.length ? <Editor file={currentFile} setTranscriptText={this.setTranscriptText} updateTiming={this.updateTiming} exportToSrt={this.exportToSrt}/> : <GettingStarted/>}
