@@ -25,13 +25,18 @@ class TranscriptModal extends Component {
                 style={{
                     overlay: {
                         zIndex: 3,
-                        background: 'rgba(0,0,0,0.5)'
+                        background: 'rgba(0,0,0,0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     },
                     content: {
                         background: 'rgba(0,0,0,0.8)',
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-between',
+                        position: 'static',
+                        width: '600px'
                     }
                 }}
                 contentLabel="Transcript">

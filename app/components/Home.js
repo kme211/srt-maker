@@ -143,10 +143,15 @@ class Home extends Component {
           style={{
               overlay: {
                   zIndex: 3,
-                  background: 'rgba(0,0,0,0.5)'
+                  background: 'rgba(0,0,0,0.5)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
               },
               content: {
-                  background: 'rgba(0,0,0,0.8)'
+                  background: 'rgba(0,0,0,0.8)',
+                  position: 'static',
+                  maxWidth: '600px'
               }
           }}
           contentLabel="KeyboardShortcuts">
