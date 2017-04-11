@@ -31,7 +31,7 @@ class TranscriptModal extends Component {
                         alignItems: 'center'
                     },
                     content: {
-                        background: 'rgba(0,0,0,0.8)',
+                        background: '#080707',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',

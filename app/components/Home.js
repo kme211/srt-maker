@@ -156,7 +156,7 @@ class Home extends Component {
                   alignItems: 'center'
               },
               content: {
-                  background: 'rgba(0,0,0,0.8)',
+                  background: '#080707',
                   position: 'static',
                   maxWidth: '600px'
               }
