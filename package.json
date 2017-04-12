@@ -1,7 +1,7 @@
 {
   "name": "srt-maker",
   "productName": "SRT Maker",
-  "version": "0.10.0",
+  "version": "1.0.0",
   "description": "Tool for easily creating SRT files for audio clips",
   "main": "main.js",
   "scripts": {
@@ -29,8 +29,8 @@
   },
   "browserslist": "electron 1.4",
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.develar.ElectronReact",
+    "productName": "srt-maker",
+    "appId": "org.keari.srtmaker",
     "category": "public.app-category.tools",
     "dmg": {
       "contents": [
@@ -56,7 +56,7 @@
       "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "squirrel"
     },
     "linux": {
       "target": [
@@ -74,27 +74,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
+    "url": "git+https://github.com/kme211/srt-maker.git"
   },
   "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
+    "name": "Keari Eggers",
+    "email": "kungfu.keari@gmail.com",
+    "url": "https://github.com/kme211"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
+    "url": "https://github.com/kme211/srt-maker/issues"
   },
   "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "react-router",
-    "flux",
-    "webpack",
-    "react-hot"
+    "srt",
+    "subtitles"
   ],
-  "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/kme211/srt-maker",
   "jest": {
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/mocks/fileMock.js",
@@ -137,6 +132,7 @@
     "devtron": "^1.4.0",
     "electron": "^1.4.15",
     "electron-builder": "^13.3.2",
+    "electron-builder-squirrel-windows": "^16.8.3",
     "electron-devtools-installer": "^2.0.1",
     "enzyme": "^2.7.1",
     "eslint": "^3.14.0",
