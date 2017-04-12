@@ -24,6 +24,33 @@
   font-size: 2rem;
 }
 
+.version {
+  color: gray;
+  font-size: .8rem;
+  font-weight: 200;
+}
+
+.updatePrompt {
+  background: #D62B70;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+}
+
+.updatePrompt button {
+  color: white;
+  border: 1px solid white;
+}
+
+.updatePrompt > * {
+  margin-right: 0.5rem;
+}
+
+.updatePrompt button:last-child {
+  margin-right: 0;
+}
+
 .bottomBar {
   box-sizing: border-box;
   display: flex;

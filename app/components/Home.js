@@ -8,6 +8,7 @@ import Editor from './Editor';
 import GettingStarted from './GettingStarted';
 import cuid from 'cuid';
 import Modal from 'react-modal';
+import { version } from '../package.json';
 
 class Home extends Component {
   props: {
@@ -124,7 +125,7 @@ class Home extends Component {
 
           <div className={styles.main}>
             <header className={styles.header}>
-              <h2>srt maker</h2>
+              <h2>srt maker <span className={styles.version}>v{version}</span></h2>
             </header>
 
             <div className={styles.middle}>
@@ -141,7 +142,11 @@ class Home extends Component {
             </div>
           </div>
 
-          
+          <div className={styles.updatePrompt}>
+            <span>Hey, there! An update was downloaded. Do you want to restart and install?</span>
+            <button>Yes</button>
+            <button>No</button>
+          </div>
           
         </div>
 
