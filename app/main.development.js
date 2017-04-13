@@ -6,6 +6,17 @@ import session from './session';
 import { version } from '../package.json';
 
 const appInstalled = /[\\\/]electron-prebuilt/.test(process.execPath);
+const appFirstRun = isFirstRun();
+
+function isFirstRun() {
+  if (process.argv.length === 1) {
+    return false;
+  }
+
+  const squirrelEvent = process.argv[1];
+  if(squirrelEvent === '--squirrel-firstrun') return true; 
+  return false;
+}
 
 let menu;
 let template;
@@ -69,7 +80,7 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
-  if(appInstalled) {
+  if(appInstalled && !appFirstRun) {
     autoUpdater.setFeedURL(`https://srt-maker-nuts.herokuapp.com/update/win32/${version}`);
 
     ipcMain.on('check-for-update', () => {
