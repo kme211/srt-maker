@@ -22,9 +22,12 @@ class Home extends Component {
 
     this.state = {
       currentFileId: '',
-      keyboardShortcutsModalOpen: false
+      keyboardShortcutsModalOpen: false,
+      updateAvailable: true
     };
 
+    this.installUpdate = this.installUpdate.bind(this);
+    this.dismissUpdate = this.dismissUpdate.bind(this);
     this.exportToSrt = this.exportToSrt.bind(this);
     this.openDialog = this.openDialog.bind(this);
     this.updateCurrentFileId = this.updateCurrentFileId.bind(this);
@@ -54,6 +57,12 @@ class Home extends Component {
     ipcRenderer.on('session-loaded', (event, data) => {
       this.props.addFiles(JSON.parse(data));
     });
+
+    ipcRenderer.send('check-for-update');
+
+    ipcRenderer.on('update-downloaded', (event) => {
+      this.setState({ updateAvailable: true });
+    });
   }
 
 
@@ -61,6 +70,14 @@ class Home extends Component {
     if(!prevProps.files.length && this.props.files.length) {
       this.setState({ currentFileId: this.props.files[0].id });
     }
+  }
+
+  installUpdate() {
+    ipcRenderer.send('install-update');
+  }
+
+  dismissUpdate() {
+    this.setState({ updateAvailable: false });
   }
 
   exportToSrt(ids: string[]) {
@@ -116,7 +133,7 @@ class Home extends Component {
 
   render() {
     const { files } = this.props;
-    const { currentFileId, keyboardShortcutsModalOpen } = this.state;
+    const { currentFileId, keyboardShortcutsModalOpen, updateAvailable } = this.state;
     const currentFile = files.find(file => file.id === currentFileId);
     return (
       <div>
@@ -141,12 +158,12 @@ class Home extends Component {
                 <button className="btn btn-default" onClick={this.toggleKeyboardShortcutsModal}><i className="fa fa-keyboard-o" aria-hidden="true"></i> Keyboard shortcuts</button>
             </div>
           </div>
-
-          <div className={styles.updatePrompt}>
+          
+          {updateAvailable && <div className={styles.updatePrompt}>
             <span>Hey, there! An update was downloaded. Do you want to restart and install?</span>
-            <button>Yes</button>
-            <button>No</button>
-          </div>
+            <button onClick={this.installUpdate}>Yes</button>
+            <button onClick={this.dismissUpdate}>No</button>
+          </div>}
           
         </div>
 
