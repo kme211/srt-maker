@@ -43,15 +43,10 @@
     animation: shake 150ms 2 linear;
 }
 
-.setTimeBtn:before,
-.setTimeBtnShake:before {
-    content: '\f02e';
+.setTimeBtnShake > span,
+.setTimeBtn > span {
     display: block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    margin-bottom: 2px;
+    margin: 0 auto 0.4em auto;
 }
 
 .time {

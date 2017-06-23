@@ -17,7 +17,7 @@ class TranscriptModal extends Component {
     };
 
     render() {
-        const { isOpen, closeModal, fileName, text, resetTranscript, updateTempTranscriptText, tempTiming, updateTempTiming, saveTranscript } = this.props;
+        const { error, isOpen, closeModal, fileName, text, resetTranscript, updateTempTranscriptText, tempTiming, updateTempTiming, saveTranscript } = this.props;
         return (
              <Modal
                 isOpen={isOpen}
@@ -46,6 +46,7 @@ class TranscriptModal extends Component {
                 <div>
                     {text.length === 0 ? <TranscriptTextarea value={text} onChange={updateTempTranscriptText} /> : 
                     <TranscriptEditor transcript={text} tempTiming={tempTiming} updateTempTiming={updateTempTiming} />}
+                    {error && <div className={styles.error}>{error}</div>}
                 </div>
 
                 <div className={styles.buttonPanel}>

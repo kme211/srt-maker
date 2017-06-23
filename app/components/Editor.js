@@ -7,6 +7,7 @@ import WaveformPeaks from './WaveformPeaks';
 import getTimeString from '../utils/getTimeString';
 import getValidationErrors from '../utils/getValidationErrors';
 import ScrollArea from 'react-scrollbar';
+import Icon from './Icon';
 
 class Editor extends Component {
     props: {
@@ -23,6 +24,7 @@ class Editor extends Component {
             playing: false,
             pos: 0,
             transcriptModalIsOpen: false,
+            transcriptTextError: null,
             tempTranscriptText: '',
             tempTiming: [],
             currentTimingIndex: -1,
@@ -106,7 +108,10 @@ class Editor extends Component {
     }
 
     updateTempTranscriptText(e) {
-        this.setState({ tempTranscriptText: e.target.value });
+        if(e.target.value.length === 1) {
+            return this.setState({ transcriptTextError: 'Oops, the transcript must be pasted in!' });
+        }
+        this.setState({ tempTranscriptText: e.target.value, transcriptTextError: null });
     }
 
     updateTempTiming(newTiming: {id: string, text: string}[]) {
@@ -147,13 +152,13 @@ class Editor extends Component {
 
     exportCurrentFile() {
         const { file, exportToSrt } = this.props;
-        exportToSrt([file.id]);
+        exportToSrt([file]);
     }
 
     render() {
         const { file } = this.props;
         const timing = file.timing;
-        const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming, validationErrors } = this.state;
+        const { playing, pos, tempTranscriptText, currentTimingIndex, tempTiming, validationErrors, transcriptTextError } = this.state;
         const setStartTimeBtnClass = validationErrors.find(err => err.button === 'startTime') ? styles.setTimeBtnShake : styles.setTimeBtn;
         const setEndTimeBtnClass = validationErrors.find(err => err.button === 'endTime') ? styles.setTimeBtnShake : styles.setTimeBtn;
         const block = timing[currentTimingIndex];
@@ -184,9 +189,9 @@ class Editor extends Component {
                 </div>
 
                 <div className={styles.buttonPanel}>
-                    {currentTimingIndex >= 0 && <button className={setStartTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'startTime')}>Set start</button>}
-                    <button onClick={this.handleTogglePlay}>{playing ? <i className="fa fa-pause" aria-hidden="true"></i> : <i className="fa fa-play" aria-hidden="true"></i>}</button>
-                    {currentTimingIndex >= 0 && <button className={setEndTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'endTime')}>Set end</button>}
+                    {currentTimingIndex >= 0 && <button className={setStartTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'startTime')}><Icon icon="bookmark"/>Set start</button>}
+                    <button onClick={this.handleTogglePlay}>{playing ? <Icon icon="pause" aria-hidden="true"/> : <Icon icon="play" aria-hidden="true"/>}</button>
+                    {currentTimingIndex >= 0 && <button className={setEndTimeBtnClass} onClick={this.handleTimingChange.bind(this, 'endTime')}><Icon icon="bookmark"/>Set end</button>}
                 </div>
                 <ScrollArea className={styles.transcript} speed={0.8} horizontal={false}>
                     {timing.length ?  <Transcript timing={timing} currentTimingIndex={currentTimingIndex} setCurrentTimingIndex={this.setCurrentTimingIndex} /> : <button onClick={this.openModal}>Add transcript</button>}
@@ -196,6 +201,7 @@ class Editor extends Component {
                 <TranscriptModal 
                     isOpen={this.state.transcriptModalIsOpen}
                     text={tempTranscriptText}
+                    error={transcriptTextError}
                     closeModal={this.closeModal}
                     fileName={fileName}
                     updateTempTranscriptText={this.updateTempTranscriptText}

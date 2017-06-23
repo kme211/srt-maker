@@ -10,3 +10,9 @@
 .buttonPanel > button:not(:last-child) {
     margin-right: 0.5rem;
 }
+
+.error {
+    margin-top: -1em;
+    color: #F92727;
+    font-size: 0.75em;
+}

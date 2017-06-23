@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import styles from './TranscriptEditor.css';
 import cuid from 'cuid';
+import Icon from './Icon';
 
 class TranscriptEditor extends Component {
     props: {
@@ -74,8 +75,8 @@ class TranscriptEditor extends Component {
                     return (
                         <div className={styles.row} key={index}>
                                 <textarea value={block.text} rows={2} className={styles.textBlock} data-id={block.id} onChange={this.updateBlock} />
-                                <button className={styles.addButton} onClick={this.addBlock} data-id={block.id}><i className="fa fa-plus"/>Add block after</button>
-                                <button className={styles.removeButton} onClick={this.removeBlock} data-id={block.id}><i className="fa fa-times"/>Remove block</button>    
+                                <button className={styles.addButton} onClick={this.addBlock} data-id={block.id}><div>+</div> Add block after</button>
+                                <button className={styles.removeButton} onClick={this.removeBlock} data-id={block.id}><div>-</div> Remove block</button>    
                         </div>
                     );
                 })}

@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu, shell,  dialog, ipcMain, ipcRenderer } from '
 import os from 'os';
 import fs from 'fs';
 import session from './session';
+import path from 'path';
 
 let menu;
 let template;
@@ -75,27 +76,43 @@ app.on('ready', async () => {
     });
   });
 
-  ipcMain.on('export-to-srt', (event, data) => {
-    dialog.showSaveDialog({
-      title: "Save file",
-      defaultPath: data.length > 1 ? null : data[0].fileName
-    }, (fileName) => {
-      if(!fileName) return;
-      data.forEach(function(file) {
-        const fileData = file.timing.map((block, index) => {
+  function writeSrt(filePath, file) {
+    return new Promise((resolve, reject) => {
+      const fileData = file.timing.map((block, index) => {
           return `
 ${index + 1}
 ${block.startTime} --> ${block.endTime}
 ${block.text.trim()}
 `;
-        })
-        fs.writeFile(fileName, fileData.join(''), 'utf-8', (err) => {
-          if(err) return console.log(err);
-          console.log('file written to ' + fileName);
-          event.sender.send('file-written', fileName);
-        });
       });
       
+      fs.writeFile(path.resolve(filePath, file.fileName), fileData.join(''), 'utf-8', (err) => {
+        if(err) return reject(err, file.FilName);
+        console.log(`${file.fileName} written to ${filePath}`);
+        resolve(file.fileName);
+      });
+    })
+    
+  }
+
+  ipcMain.on('export-to-srt', (event, data) => {
+    dialog.showSaveDialog({
+      title: "Save file",
+      defaultPath: data[0].fileName
+    }, (fileName) => {
+      if(!fileName) return;
+      const promises = [];
+      const separator = fileName.match('\/') ? '/' : '\\';
+      const filePath = fileName.split(separator).slice(0, -1).join(separator);
+
+      data.forEach(function(file) {
+        promises.push(writeSrt(filePath, file));
+      });
+
+      Promise.all(promises).then((fileNames) => {
+        console.log('files saved', fileNames)
+        event.sender.send('files-saved', filePath, fileNames);
+      });
     });
   });
 

@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import styles from './AudioList.css';
 import ScrollArea from 'react-scrollbar';
+import Icon from './Icon';
 
 class AudioList extends Component {
     props: {
@@ -33,8 +34,8 @@ class AudioList extends Component {
                                 className={itemStyles} 
                                 onClick={onClick.bind(null, file.id)}>
                                 
-                                {fileName}
-                                {complete && <i className="fa fa-check" aria-hidden="true"></i>}
+                                {fileName} 
+                                {complete && <Icon style={{marginLeft: '4px'}} icon="checkmark" aria-hidden="true"/>}
                             </li>
                         )
                     })}
