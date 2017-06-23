@@ -1,22 +1,7 @@
-import { app, BrowserWindow, Menu, shell,  dialog, ipcMain, ipcRenderer, autoUpdater } from 'electron';
-if(require('electron-squirrel-startup')) app.quit(); // eslint-disable-line global-require
+import { app, BrowserWindow, Menu, shell,  dialog, ipcMain, ipcRenderer } from 'electron';
 import os from 'os';
 import fs from 'fs';
 import session from './session';
-import { version } from '../package.json';
-
-const appInstalled = /[\\\/]electron-prebuilt/.test(process.execPath);
-const appFirstRun = isFirstRun();
-
-function isFirstRun() {
-  if (process.argv.length === 1) {
-    return false;
-  }
-
-  const squirrelEvent = process.argv[1];
-  if(squirrelEvent === '--squirrel-firstrun') return true; 
-  return false;
-}
 
 let menu;
 let template;
@@ -80,30 +65,6 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
-  if(appInstalled && !appFirstRun) {
-    autoUpdater.setFeedURL(`https://srt-maker-nuts.herokuapp.com/update/win32/${version}`);
-
-    ipcMain.on('check-for-update', () => {
-      console.log('Checking for update');
-      autoUpdater.checkForUpdates();
-    });
-
-    autoUpdater.on('error', err => console.error(err));
-    autoUpdater.on('checking-for-update', () => console.log('checking-for-update'));
-    autoUpdater.on('update-available', () => {
-      
-    });
-    autoUpdater.on('update-not-available', () => console.log('update-not-available'));
-
-    autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-      mainWindow.webContents.on('install-update', () => {
-        autoUpdater.quitAndInstall();
-      });
-      mainWindow.webContents.send('update-downloaded');
-      
-    });
-  }
-
   ipcMain.on('add-mp3', (event) => {
     dialog.showOpenDialog({
       title: 'Add MP3',
@@ -137,8 +98,6 @@ ${block.text.trim()}
       
     });
   });
-
-
 
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();

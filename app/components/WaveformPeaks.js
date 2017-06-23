@@ -14,6 +14,11 @@ class WaveformPeaks extends Component {
        playing: boolean
     };
 
+    state: {
+        width: string,
+        loading: boolean
+    };
+
     constructor(props) {
         super(props);
 

@@ -65,6 +65,10 @@
   flex: 0 1 auto;
 }
 
+.buttonGroup > button {
+  margin-right: 6px;
+}
+
 .middle {
   flex: 1 1 100%;
   display: flex;

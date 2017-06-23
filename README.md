@@ -25,3 +25,9 @@ npm run dev
 ## Package 
 
 See [boilerplate readme](https://github.com/chentsulin/electron-react-boilerplate#packaging) for packaging instructions.
+
+## Icons
+
+- export by Eagle Eye from the Noun Project
+- add by AfterGrind from the Noun Project
+- Arrows Keyboard by IconsGhost  from the Noun Project

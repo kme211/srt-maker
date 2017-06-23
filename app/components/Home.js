@@ -8,13 +8,19 @@ import Editor from './Editor';
 import GettingStarted from './GettingStarted';
 import cuid from 'cuid';
 import Modal from 'react-modal';
+import Icon from './Icon';
 import { version } from '../package.json';
 
 class Home extends Component {
   props: {
     addFiles: () => void,
     updateFile: () => void,
-    files: array
+    files: Array
+  };
+
+  state: {
+    currentFileId: string,
+    keyboardShortcutsModalOpen: boolean
   };
 
   constructor(props) {
@@ -22,12 +28,9 @@ class Home extends Component {
 
     this.state = {
       currentFileId: '',
-      keyboardShortcutsModalOpen: false,
-      updateAvailable: true
+      keyboardShortcutsModalOpen: false
     };
 
-    this.installUpdate = this.installUpdate.bind(this);
-    this.dismissUpdate = this.dismissUpdate.bind(this);
     this.exportToSrt = this.exportToSrt.bind(this);
     this.openDialog = this.openDialog.bind(this);
     this.updateCurrentFileId = this.updateCurrentFileId.bind(this);
@@ -57,12 +60,6 @@ class Home extends Component {
     ipcRenderer.on('session-loaded', (event, data) => {
       this.props.addFiles(JSON.parse(data));
     });
-
-    ipcRenderer.send('check-for-update');
-
-    ipcRenderer.on('update-downloaded', (event) => {
-      this.setState({ updateAvailable: true });
-    });
   }
 
 
@@ -72,16 +69,9 @@ class Home extends Component {
     }
   }
 
-  installUpdate() {
-    ipcRenderer.send('install-update');
-  }
-
-  dismissUpdate() {
-    this.setState({ updateAvailable: false });
-  }
-
   exportToSrt(ids: string[]) {
     const data = [];
+    console.log('exportToSRT', ids)
     for(let id of ids) {
       const file = this.props.files.find(file => file.id === id);
       const { timing, filePath } = file;
@@ -99,7 +89,7 @@ class Home extends Component {
     ipcRenderer.send('add-mp3');
   }
 
-  updateCurrentFileId(id) {
+  updateCurrentFileId(id: string) {
     this.setState({
       currentFileId: id
     });
@@ -133,7 +123,7 @@ class Home extends Component {
 
   render() {
     const { files } = this.props;
-    const { currentFileId, keyboardShortcutsModalOpen, updateAvailable } = this.state;
+    const { currentFileId, keyboardShortcutsModalOpen } = this.state;
     const currentFile = files.find(file => file.id === currentFileId);
     return (
       <div>
@@ -154,16 +144,14 @@ class Home extends Component {
             </div>
 
             <div className={styles.bottomBar}>
-                <button className="btn btn-default" onClick={this.openDialog}><i className="fa fa-plus" aria-hidden="true"></i> Add audio</button>
-                <button className="btn btn-default" onClick={this.toggleKeyboardShortcutsModal}><i className="fa fa-keyboard-o" aria-hidden="true"></i> Keyboard shortcuts</button>
+                <div className={styles.buttonGroup}>
+                  <button className="btn btn-default" onClick={this.openDialog}><Icon icon="add" aria-hidden="true"/> Add audio</button>
+                  <button className="btn btn-default"><Icon icon="export" aria-hidden="true"/>Batch export</button>
+                </div>
+
+                <button className="btn btn-default" onClick={this.toggleKeyboardShortcutsModal}><Icon icon="keys" aria-hidden="true"/> Keyboard shortcuts</button>
             </div>
           </div>
-          
-          {updateAvailable && <div className={styles.updatePrompt}>
-            <span>Hey, there! An update was downloaded. Do you want to restart and install?</span>
-            <button onClick={this.installUpdate}>Yes</button>
-            <button onClick={this.dismissUpdate}>No</button>
-          </div>}
           
         </div>
 
