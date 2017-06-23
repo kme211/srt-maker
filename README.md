@@ -1,4 +1,4 @@
-# srt-maker (WIP)
+# srt-maker
 
 A desktop application for creating [srt](https://en.wikipedia.org/wiki/SubRip#SubRip_text_file_format) files.
 
@@ -9,6 +9,10 @@ This program exists to make timing subtitles to audio easier. It's not currently
 ## Technologies
 
 I used an [Electron/React/Redux](https://github.com/chentsulin/electron-react-boilerplate) boilerplate.
+
+## Installation (Windows)
+
+I have created an `.exe` file for Windows in the Releases section of this repository if you wish to install/run the program on your machine.
 
 ## Installation (development)
 
@@ -28,6 +32,7 @@ See [boilerplate readme](https://github.com/chentsulin/electron-react-boilerplat
 
 ## Icons
 
+- https://icomoon.io
 - export by Eagle Eye from the Noun Project
 - add by AfterGrind from the Noun Project
-- Arrows Keyboard by IconsGhost  from the Noun Project
+- Arrows Keyboard by IconsGhost from the Noun Project
