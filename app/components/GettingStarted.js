@@ -15,7 +15,7 @@ class GettingStarted extends Component {
             <div className={styles.gettingStarted}>
                 <h1>Welcome!</h1>
                 <p>
-                    Looks like this is the first time you've used srt maker. First you need to add some audio files by 
+                    Add some audio files by 
                     clicking on the <code>Add audio</code> button in the lower left corner.
                 </p>
             </div>
