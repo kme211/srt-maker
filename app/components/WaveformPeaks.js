@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import Peaks from '../../node_modules/peaks.js/peaks.js';
 //import Peaks from 'peaks.js';
 import styles from './WaveformPeaks.css';
-import Colors from './Colors';
 import LoadingDots from './LoadingDots';
 
 class WaveformPeaks extends Component {
@@ -82,15 +81,17 @@ class WaveformPeaks extends Component {
         const peaks = this.peaks;
         if(!peaks.segments) return;
         const { segments, fileName } = this.props;
+        if(!segments.length) return peaks.segments.removeAll();
+
         const peaksSegments = peaks.segments.getSegments();
-        segments.forEach(({ id, startTimeSeconds: startTime, endTimeSeconds: endTime }, index) => {
+        segments.forEach(({ id, startTimeSeconds: startTime, endTimeSeconds: endTime, color }, index) => {
             const peaksSegment = peaksSegments.find(s => s.id === id);
             if(!peaksSegment || peaksSegment.startTime !== startTime || peaksSegment.endTime !== endTime) {
                 peaks.segments.removeById(id);
                 peaks.segments.add({
-                    startTime: startTime, 
-                    endTime: endTime, 
-                    color: Colors[index], 
+                    startTime, 
+                    endTime, 
+                    color, 
                     labelText: `${fileName}_${index + 1}`,
                     id
                 })

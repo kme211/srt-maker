@@ -23,7 +23,6 @@ function getValidationErrors(timing: timingType[], currentTimingIndex: number, c
     const currentEndTime = +currentBlock.endTimeSeconds;
     const currentStartTime = +currentBlock.startTimeSeconds;
     const createError = createValidationError.bind(null, timeType);
-
     if(timeType === 'startTime') {
         if(currentEndTime >= 0) {
             if(currentPos === currentEndTime) validationErrors.push(createError(0));

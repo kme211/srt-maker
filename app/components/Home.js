@@ -11,6 +11,7 @@ import Modal from 'react-modal';
 import Icon from './Icon';
 import { version } from '../package.json';
 import FilesSavedModal from './FilesSavedModal';
+import getRandomColor from '../utils/getRandomColor';
 
 class Home extends Component {
   props: {
@@ -123,24 +124,44 @@ class Home extends Component {
 
   setTranscriptText({ id, tempTiming }) {
     // id: string, tempTiming: {id: string, text: string}[]
-    const timing = tempTiming.map(block =>
-      Object.assign({}, block, {
+    const colors = [];
+    const timing = tempTiming.map(block =>{
+      const color = getRandomColor(colors);
+      colors.push(color)
+      return Object.assign({}, block, {
         startTime: 'not set',
-        endTime: 'not set'
-      })
+        endTime: 'not set',
+        color
+      });
+    }
     );
     this.props.updateFile({ id, timing });
   }
 
-  updateTiming({ id, updatedBlock }) {
-    // id: string, updatedBlock: {id: string, text: string, startTime: string, endTime: string}
+  updateTiming({ id, updatedBlock, clear }) {
     const file = this.props.files.find(file => file.id === id);
-    const index = file.timing.findIndex(block => block.id === updatedBlock.id);
-    const timing = [
-      ...file.timing.slice(0, index),
-      updatedBlock,
-      ...file.timing.slice(index + 1)
-    ];
+    let timing;
+
+    if (clear) {
+      timing = file.timing.map(block =>
+        Object.assign({}, block, {
+          startTime: 'not set',
+          endTime: 'not set',
+          startTimeSeconds: undefined,
+          endTimeSeconds: undefined
+        })
+      );
+    } else {
+      const index = file.timing.findIndex(
+        block => block.id === updatedBlock.id
+      );
+      timing = [
+        ...file.timing.slice(0, index),
+        updatedBlock,
+        ...file.timing.slice(index + 1)
+      ];
+    }
+
     this.props.updateFile({ id, timing });
   }
 
@@ -215,7 +236,10 @@ class Home extends Component {
 
         </div>
 
-        <FilesSavedModal fileNames={filesSavedNames} closeHandler={this.closeSavedMessage} />
+        <FilesSavedModal
+          fileNames={filesSavedNames}
+          closeHandler={this.closeSavedMessage}
+        />
 
         <Modal
           isOpen={keyboardShortcutsModalOpen}

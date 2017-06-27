@@ -1,7 +1,6 @@
 // @flow
 import React, { Component } from 'react';
 import styles from './Transcript.css';
-import Colors from './Colors';
 
 class Transcript extends Component {
     props: {
@@ -19,7 +18,8 @@ class Transcript extends Component {
                     const { startTime, endTime } = block;
                     const complete = startTime !== 'not set' && endTime !== 'not set';
                     const itemClass = currentTimingIndex === index ? styles.textBlockSelected : styles.textBlock;
-                    const inlineStyles = complete ? { background: Colors[index], border: `2px solid ${Colors[index]}` } : {};
+                    const color = block.color;
+                    const inlineStyles = complete ? { background: color, border: `2px solid ${color}` } : {};
                     return (
                         <span 
                             key={index} 
