@@ -15,20 +15,6 @@
   height: 100%;
 }
 
-.header {
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.header h2 {
-  font-size: 2rem;
-}
-
-.version {
-  color: gray;
-  font-size: .8rem;
-  font-weight: 200;
-}
 
 .updatePrompt {
   background: #D62B70;
@@ -87,12 +73,4 @@
   color: #95989A;
   font-size: 0.75rem;
   margin: 0.5rem 1rem; 
-}
-
-.keyboardShortcuts h1 {
-  font-size: 1.5rem;
-}
-
-.keyboardShortcuts p {
-  font-size: 1.5rem;
 }

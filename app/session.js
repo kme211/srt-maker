@@ -5,9 +5,9 @@ const sessionFilters = [{ name: 'Session', extensions: ['json']}];
 let mainWindow = null;
 
 function requestData(fileName) {
-    mainWindow.webContents.send('session-filename');
-    ipcMain.once('session-data', (event, data) => {
-        saveData(fileName, data);
+    mainWindow.webContents.send('session-saving');
+    ipcMain.once('session-data', (event, data, savedFileName) => {
+        saveData(savedFileName || fileName, data);
     });
 }
 
@@ -15,6 +15,7 @@ function saveData(fileName, data) {
     fs.writeFile(fileName, data, 'utf-8', (err) => {
         if(err) return console.error(err);
         console.log('session data saved to ' + fileName);
+        mainWindow.webContents.send('session-saved', fileName); 
     });
 }
 
@@ -32,7 +33,7 @@ function save() {
 function loadData(fileName) {
     fs.readFile(fileName[0], (err, data) => {
         if(err) return console.error(err);
-        mainWindow.webContents.send('session-loaded', data); 
+        mainWindow.webContents.send('session-loaded', data, fileName[0]); 
     });
 }
 
@@ -52,6 +53,7 @@ function setMainWindow(win) {
 
 export default {
     save,
+    requestData,
     load,
     setMainWindow
 };

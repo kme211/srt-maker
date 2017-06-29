@@ -7,6 +7,7 @@ import path from 'path';
 let menu;
 let template;
 let mainWindow = null;
+let logging = false;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support'); // eslint-disable-line
@@ -18,6 +19,7 @@ if (process.env.NODE_ENV === 'development') {
   const path = require('path'); // eslint-disable-line
   const p = path.join(__dirname, '..', 'app', 'node_modules'); // eslint-disable-line
   require('module').globalPaths.push(p); // eslint-disable-line
+  logging = true;
 }
 
 app.on('window-all-closed', () => {
@@ -79,16 +81,12 @@ app.on('ready', async () => {
   function writeSrt(filePath, file) {
     return new Promise((resolve, reject) => {
       const fileData = file.timing.map((block, index) => {
-          return `
-${index + 1}
-${block.startTime} --> ${block.endTime}
-${block.text.trim()}
-`;
+          return (`${index + 1}${os.EOL}${block.startTime} --> ${block.endTime}${os.EOL}${block.text.trim()}${os.EOL}${os.EOL}`);
       });
       
       fs.writeFile(path.resolve(filePath, file.fileName), fileData.join(''), 'utf-8', (err) => {
         if(err) return reject(err, file.FilName);
-        console.log(`${file.fileName} written to ${filePath}`);
+        if(logging) console.log(`${file.fileName} written to ${filePath}`);
         resolve(file.fileName);
       });
     })
@@ -110,10 +108,14 @@ ${block.text.trim()}
       });
 
       Promise.all(promises).then((fileNames) => {
-        console.log('files saved', fileNames)
+        if(logging) console.log('files saved', fileNames)
         event.sender.send('files-saved', filePath, fileNames);
       });
     });
+  });
+
+  ipcMain.on('session-updated', (event) => {
+    session.requestData();
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -238,24 +240,9 @@ ${block.text.trim()}
     }, {
       label: 'Help',
       submenu: [{
-        label: 'Learn More',
-        click() {
-          shell.openExternal('http://electron.atom.io');
-        }
-      }, {
-        label: 'Documentation',
-        click() {
-          shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-        }
-      }, {
-        label: 'Community Discussions',
-        click() {
-          shell.openExternal('https://discuss.atom.io/c/electron');
-        }
-      }, {
         label: 'Search Issues',
         click() {
-          shell.openExternal('https://github.com/atom/electron/issues');
+          shell.openExternal('https://github.com/kme211/srt-maker/issues');
         }
       }]
     }];
@@ -266,6 +253,12 @@ ${block.text.trim()}
     template = [{
       label: '&File',
       submenu: [{
+        label: 'New',
+        accelerator: 'Ctrl+N',
+        click() {
+          mainWindow.webContents.reload();
+        }
+      }, {
         label: '&Open',
         accelerator: 'Ctrl+O',
         click() {
@@ -314,24 +307,15 @@ ${block.text.trim()}
     }, {
       label: 'Help',
       submenu: [{
-        label: 'Learn More',
-        click() {
-          shell.openExternal('http://electron.atom.io');
-        }
-      }, {
-        label: 'Documentation',
-        click() {
-          shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-        }
-      }, {
-        label: 'Community Discussions',
-        click() {
-          shell.openExternal('https://discuss.atom.io/c/electron');
-        }
-      }, {
         label: 'Search Issues',
         click() {
-          shell.openExternal('https://github.com/atom/electron/issues');
+          shell.openExternal('https://github.com/kme211/srt-maker/issues');
+        }
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Alt+Ctrl+I',
+        click() {
+          mainWindow.toggleDevTools();
         }
       }]
     }];

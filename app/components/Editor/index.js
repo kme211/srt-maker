@@ -1,13 +1,13 @@
 // @flow
 import React, { Component } from 'react';
-import styles from './Editor.css';
-import TranscriptModal from './TranscriptModal';
-import Transcript from './Transcript';
-import WaveformPeaks from './WaveformPeaks';
-import getTimeString from '../utils/getTimeString';
-import getValidationErrors from '../utils/getValidationErrors';
+import styles from './styles.css';
+import TranscriptModal from './components/TranscriptModal';
+import Transcript from './components/Transcript';
+import WaveformPeaks from './components/WaveformPeaks';
+import getTimeString from '../../utils/getTimeString';
+import getValidationErrors from '../../utils/getValidationErrors';
 import ScrollArea from 'react-scrollbar';
-import Icon from './Icon';
+import Icon from '../Icon';
 
 class Editor extends Component {
   props: {
@@ -45,6 +45,7 @@ class Editor extends Component {
     this.resetTranscript = this.resetTranscript.bind(this);
     this.exportCurrentFile = this.exportCurrentFile.bind(this);
     this.clearTiming = this.clearTiming.bind(this);
+    this.editTranscript = this.editTranscript.bind(this);
   }
 
   componentDidMount() {
@@ -124,7 +125,7 @@ class Editor extends Component {
     });
   }
 
-  updateTempTiming(newTiming: { id: string, text: string }[]) {
+  updateTempTiming(newTiming) {
     this.setState({ tempTiming: newTiming });
   }
 
@@ -168,14 +169,22 @@ class Editor extends Component {
     this.setState({ currentTimingIndex: index });
   }
 
-  exportCurrentFile() {
+  exportCurrentFile(e) {
+    e.target.blur();
     const { file, exportToSrt } = this.props;
     exportToSrt([file]);
   }
 
-  clearTiming() {
+  clearTiming(e) {
+    e.target.blur();
     const { file, updateTiming } = this.props;
     updateTiming({ id: file.id, clear: true });
+  }
+
+  editTranscript(e) {
+    e.target.blur();
+    const { file } = this.props;
+    this.setState({ transcriptModalIsOpen: true, tempTiming: [].concat(file.timing) });
   }
 
   render() {
@@ -301,6 +310,9 @@ class Editor extends Component {
         <div className={styles.buttonPanelBottom}>
           <button disabled={!complete} onClick={this.exportCurrentFile}>
             Export
+          </button>
+          <button onClick={this.editTranscript}>
+            Edit transcript
           </button>
           <button onClick={this.clearTiming}>
             Clear timing

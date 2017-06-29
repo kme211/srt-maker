@@ -7,10 +7,11 @@ import AudioList from './AudioList';
 import Editor from './Editor';
 import GettingStarted from './GettingStarted';
 import cuid from 'cuid';
-import Modal from 'react-modal';
 import Icon from './Icon';
 import { version } from '../package.json';
+import Header from './Header';
 import FilesSavedModal from './FilesSavedModal';
+import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import getRandomColor from '../utils/getRandomColor';
 
 class Home extends Component {
@@ -30,12 +31,16 @@ class Home extends Component {
     super(props);
 
     this.state = {
+      fileName: null,
+      sessionLastSaved: null,
+      sessionStatus: null,
       currentFileId: '',
       keyboardShortcutsModalOpen: false,
       filesSavedNames: [],
       error: null
     };
 
+    this.updateTime = this.updateTime.bind(this);
     this.closeSavedMessage = this.closeSavedMessage.bind(this);
     this.getCompleteFiles = this.getCompleteFiles.bind(this);
     this.batchExport = this.batchExport.bind(this);
@@ -50,6 +55,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    window.setTimeout(this.updateTime, 60000); // refresh fuzzy session time
     ipcRenderer.on('mp3-selected', (event, fileNames) => {
       if (fileNames) {
         const files = fileNames.map(filePath => ({
@@ -61,12 +67,32 @@ class Home extends Component {
       }
     });
 
-    ipcRenderer.on('session-filename', event => {
-      event.sender.send('session-data', JSON.stringify(this.props.files));
+    ipcRenderer.on('session-saving', event => {
+      const fileName = this.state.fileName;
+      event.sender.send(
+        'session-data',
+        JSON.stringify(this.props.files),
+        fileName
+      );
+      this.setState({ sessionStatus: 'Saving...' });
     });
 
-    ipcRenderer.on('session-loaded', (event, data) => {
+    ipcRenderer.on('session-loaded', (event, data, fileName) => {
       this.props.addFiles(JSON.parse(data));
+      this.setState({
+        fileName,
+        sessionLastSaved: Date.now(),
+        sessionStatus: 'Opened'
+      });
+    });
+
+    ipcRenderer.on('session-saved', (event, fileName) => {
+      const sessionName = fileName.split('\\').pop().replace('.json', '');
+      this.setState({
+        fileName,
+        sessionLastSaved: Date.now(),
+        sessionStatus: 'Saved'
+      });
     });
 
     ipcRenderer.on('files-saved', (event, filePath, filesSavedNames) => {
@@ -78,6 +104,14 @@ class Home extends Component {
     if (!prevProps.files.length && this.props.files.length) {
       this.setState({ currentFileId: this.props.files[0].id });
     }
+    if (this.state.fileName && prevProps.files !== this.props.files) {
+      ipcRenderer.send('session-updated');
+    }
+  }
+
+  updateTime() {
+    this.forceUpdate();
+    window.setTimeout(this.updateTime, 60000);
   }
 
   exportToSrt(files) {
@@ -108,7 +142,8 @@ class Home extends Component {
     this.exportToSrt(this.getCompleteFiles());
   }
 
-  openDialog() {
+  openDialog(e) {
+    e.target.blur();
     ipcRenderer.send('add-mp3');
   }
 
@@ -123,18 +158,17 @@ class Home extends Component {
   }
 
   setTranscriptText({ id, tempTiming }) {
-    // id: string, tempTiming: {id: string, text: string}[]
-    const colors = [];
-    const timing = tempTiming.map(block =>{
+    const colors = tempTiming.map(block => block.color);
+    const timing = tempTiming.map(block => {
+      if (block.color) return block; // don't set defaults if defaults have already been set
       const color = getRandomColor(colors);
-      colors.push(color)
+      colors.push(color);
       return Object.assign({}, block, {
         startTime: 'not set',
         endTime: 'not set',
         color
       });
-    }
-    );
+    });
     this.props.updateFile({ id, timing });
   }
 
@@ -176,9 +210,15 @@ class Home extends Component {
     const {
       currentFileId,
       keyboardShortcutsModalOpen,
-      filesSavedNames
+      filesSavedNames,
+      fileName,
+      sessionStatus,
+      sessionLastSaved
     } = this.state;
     const currentFile = files.find(file => file.id === currentFileId);
+    const sessionName = fileName
+      ? fileName.split('\\').pop().replace('.json', '')
+      : 'Untitled session*';
     const batchExportEnabled = !!this.getCompleteFiles().length;
 
     return (
@@ -186,11 +226,12 @@ class Home extends Component {
         <div className={styles.container} data-tid="container">
 
           <div className={styles.main}>
-            <header className={styles.header}>
-              <h2>
-                srt maker <span className={styles.version}>v{version}</span>
-              </h2>
-            </header>
+            <Header
+              version={version}
+              sessionName={sessionName}
+              sessionStatus={sessionStatus}
+              sessionLastSaved={sessionLastSaved}
+            />
 
             <div className={styles.middle}>
               <div className={styles.leftBar}>
@@ -241,34 +282,10 @@ class Home extends Component {
           closeHandler={this.closeSavedMessage}
         />
 
-        <Modal
+        <KeyboardShortcutsModal
           isOpen={keyboardShortcutsModalOpen}
-          style={{
-            overlay: {
-              zIndex: 3,
-              background: 'rgba(0,0,0,0.5)',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            },
-            content: {
-              background: '#080707',
-              position: 'static',
-              maxWidth: '600px'
-            }
-          }}
-          contentLabel="KeyboardShortcuts"
-        >
-          <div className={styles.keyboardShortcuts}>
-            <h1>Keyboard shortcuts</h1>
-            <p><code>a</code> set start time</p>
-            <p><code>d</code> set end time</p>
-            <p><code>w</code> select previous text block</p>
-            <p><code>s</code> select next text block</p>
-            <p><code>spacebar</code> toggle play/pause</p>
-            <button onClick={this.toggleKeyboardShortcutsModal}>Close</button>
-          </div>
-        </Modal>
+          closeHandler={this.toggleKeyboardShortcutsModal}
+        />
 
       </div>
     );

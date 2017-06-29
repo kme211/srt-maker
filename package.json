@@ -1,7 +1,7 @@
 {
   "name": "srt-maker",
   "productName": "SRT Maker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tool for easily creating SRT files for audio clips",
   "main": "main.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "browserslist": "electron 1.4",
   "build": {
-    "productName": "SrtMaker",
+    "productName": "SRT Maker",
     "appId": "org.keari.srtmaker",
     "category": "public.app-category.tools",
     "dmg": {

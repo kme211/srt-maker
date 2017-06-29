@@ -1,0 +1,19 @@
+.session {
+  text-align: right;
+}
+
+.session__name {
+
+}
+
+.session__saveTime {
+  font-size: 0.9em;
+  color: gray;
+  font-style: italic;
+}
+
+.session__saveTimeDanger {
+  font-size: 0.9em;
+  color: #F92727;
+  font-style: italic;
+}

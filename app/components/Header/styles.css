@@ -1,0 +1,17 @@
+.header {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header h2 {
+  font-size: 2rem;
+}
+
+.header__version {
+  color: gray;
+  font-size: .8rem;
+  font-weight: 200;
+}

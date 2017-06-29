@@ -1,9 +1,9 @@
 // @flow
 import React, { Component } from 'react';
-import Peaks from '../../node_modules/peaks.js/peaks.js';
+import Peaks from '../../../../node_modules/peaks.js/peaks.js';
 //import Peaks from 'peaks.js';
 import styles from './WaveformPeaks.css';
-import LoadingDots from './LoadingDots';
+import LoadingDots from '../../LoadingDots';
 
 class WaveformPeaks extends Component {
     props: {
@@ -79,7 +79,7 @@ class WaveformPeaks extends Component {
 
     updateSegments() {
         const peaks = this.peaks;
-        if(!peaks.segments) return;
+        if(!peaks || !peaks.segments) return;
         const { segments, fileName } = this.props;
         if(!segments.length) return peaks.segments.removeAll();
 
@@ -143,6 +143,7 @@ class WaveformPeaks extends Component {
     initPeaks(container, audio) {
         
         if(this.peaks) {
+            console.log('destroy peaks')
             this.peaks.destroy();
             this.peaks = null;
         }
@@ -157,11 +158,11 @@ class WaveformPeaks extends Component {
             height: 100,
             zoomWaveformColor: 'rgba(0, 225, 128, 1)',
             playheadColor: '#D62B70',
-            segments: segments.map(({ startTimeSeconds, endTimeSeconds, id }, index) => {
+            segments: segments.map(({ startTimeSeconds, endTimeSeconds, id, color }, index) => {
                 return {
                     startTime: startTimeSeconds, 
                     endTime: endTimeSeconds, 
-                    color: Colors[index], 
+                    color, 
                     labelText: `${fileName}_${index + 1}`,
                     id
                 };
